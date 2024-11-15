@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geoportal Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-900 text-white font-sans">
+
+    <!-- Sidebar -->
+    <div class="flex flex-col md:flex-row h-screen">
+        <aside class="w-full md:w-64 bg-gray-800 p-6">
+            <div class="flex items-center mb-8">
+                <div class="text-blue-500 text-2xl font-semibold">Administrador</div>
+            </div>
+            <nav class="space-y-2">
+                <a href="#" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md">
+                    <span>Unidades Médicas</span>
+                </a>
+                <a href="#" class="flex items-center p-2 text-gray-300 bg-gray-700 rounded-md">
+                    <span>Clínicas Médicas</span>
+                </a>
+                <a href="#" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md">
+                    <span>Cerrar Sesión</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main content -->
+        <div class="flex-1 p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-semibold">Gestión de Clínicas Médicas</h1>
+                <!-- Botón para agregar clínica -->
+                <button onclick="toggleModal('addClinicModal')" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">
+                    Agregar Clínica Médica
+                </button>
+            </div>
+
+            <!-- Cards de clínicas -->
+            <div id="clinicCards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Aquí se agregarán dinámicamente las tarjetas de clínicas -->
+            </div>
+
+            <!-- Modal para agregar clínica -->
+            <div id="addClinicModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
+                <div class="bg-gray-900 max-w-full border border-gray-300 p-6 rounded-lg">
+                    <form onsubmit="addClinic(event)">
+                        <h2 class="text-2xl font-semibold text-center text-white mb-6">Agregar Clínica Médica</h2>
+                        <div class="max-w-lg mx-auto bg-gray-800 p-6 grid gap-6 grid-cols-2 rounded-lg">
+                            <!-- Parte 1: Información General -->
+                            <div class="">
+                                <div class="mb-4">
+                                    <label for="clinicName" class="block text-sm mb-2 font-medium text-gray-300">Nombre de la Clínica</label>
+                                    <input type="text" id="clinicName" class="w-full px-3 py-2 bg-gray-700 text-white rounded-md" required>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="clinicAddress" class="block text-sm font-medium mb-2 text-gray-300">Dirección</label>
+                                    <input type="text" id="clinicAddress" class="w-full px-3 py-2 bg-gray-700 text-white rounded-md" required>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="clinicPhone" class="block text-sm font-medium mb-2 text-gray-300">Teléfono</label>
+                                    <input type="tel" id="clinicPhone" class="w-full px-3 py-2 bg-gray-700 text-white rounded-md" required>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="clinicStartWeekend" class="block text-sm font-medium mb-2 text-gray-300">Horario Inicio Fin de Semana</label>
+                                    <input type="time" id="clinicStartWeekend" class="w-full px-3 py-2 bg-gray-700 text-white rounded-md" required>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="clinicEndWeekend" class="block text-sm font-medium mb-2 text-gray-300">Horario Fin de Fin de Semana </label>
+                                    <input type="time" id="clinicEndWeekend" class="w-full px-3 py-2 bg-gray-700 text-white rounded-md" required>
+                                </div>
+                            </div>
+
+                            <!-- Parte 2: Información Adicional -->
+                            <div class="">
+                                <div class="mb-4">
+                                    <label for="clinicXCoord" class="block mb-2 text-sm font-medium text-gray-300">Coordenada X</label>
+                                    <input type="tel" id="clinicXCoord" class="w-full px-3 py-2 bg-gray-700 text-white rounded-md" required>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="clinicYCoord" class="block text-sm mb-2 font-medium text-gray-300">Coordenada Y</label>
+                                    <input type="tel" id="clinicYCoord" class="w-full px-3 py-2 bg-gray-700 text-white rounded-md" required>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="clinicZone" class="block text-sm font-medium mb-2 text-gray-300">Zona</label>
+                                    <input type="text" id="clinicZone" class="w-full px-3 py-2 bg-gray-700 text-white rounded-md" required>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="clinicStartWeek" class="block text-sm font-medium mb-2 text-gray-300">Horario Inicio de Semana</label>
+                                    <input type="time" id="clinicStartWeek" class="w-full px-3 py-2 bg-gray-700 text-white rounded-md" required>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="clinicEndWeek" class="block text-sm font-medium mb-2 text-gray-300">Horario Fin de Semana</label>
+                                    <input type="time" id="clinicEndWeek" class="w-full px-3 py-2 bg-gray-700 text-white rounded-md" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center w-full mt-5 flex justify-center items-center">
+                            <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                                Agregar Clínica
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Modal para ver detalles de la clínica -->
+            <div id="viewClinicModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
+                <div class="bg-gray-800 max-w-lg border border-gray-300 p-6 rounded-lg">
+                    <div class="text-center text-2xl font-semibold text-white mb-6">Detalles de la Clínica</div>
+                    <div id="clinicDetails" class="text-white space-y-2">
+                        <!-- Aquí se llenarán los detalles de la clínica seleccionada -->
+                    </div>
+                    <div class="text-center mt-4">
+                        <button onclick="toggleModal('viewClinicModal')" class="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+                            Cerrar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function toggleModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.toggle('hidden');
+        }
+
+        function addClinic(event) {
+            event.preventDefault();
+
+            // Obtener valores del formulario
+            const name = document.getElementById('clinicName').value;
+            const address = document.getElementById('clinicAddress').value;
+            const phone = document.getElementById('clinicPhone').value;
+            const xCoordinate = document.getElementById('clinicXCoord').value;
+            const yCoordinate = document.getElementById('clinicYCoord').value;
+            const zone = document.getElementById('clinicZone').value;
+            const weekStart = document.getElementById('clinicStartWeek').value;
+            const weekEnd = document.getElementById('clinicEndWeek').value;
+            const weekendStart = document.getElementById('clinicStartWeekend').value;
+            const weekendEnd = document.getElementById('clinicEndWeekend').value;
+
+            // Crear la tarjeta de la clínica
+            const card = document.createElement('div');
+            card.classList = 'bg-gray-800 p-4 rounded-lg shadow-md';
+            card.innerHTML = `
+                <h3 class="text-lg font-semibold">${name}</h3>
+                <p class="text-gray-400">Ubicación: ${address}</p>
+                <p class="text-gray-400">Teléfono: ${phone}</p>
+                <p class="text-gray-400">Zona: ${zone}</p>
+                <button onclick="viewClinicDetails('${name}', '${address}', '${phone}', '${xCoordinate}', '${yCoordinate}', '${zone}', '${weekStart}', '${weekEnd}', '${weekendStart}', '${weekendEnd}')" class="mt-3 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">
+                    Ver Más
+                </button>
+                <button onclick="editClinic('${name}', '${address}', '${phone}', '${xCoordinate}', '${yCoordinate}', '${zone}', '${weekStart}', '${weekEnd}', '${weekendStart}', '${weekendEnd}', this.parentElement)" class="mt-3 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md">
+                    Modificar
+                </button>
+                <button onclick="deleteClinic(this.parentElement)" class="mt-3 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md">
+                    Eliminar
+                </button>
+            `;
+
+            // Agregar la tarjeta al contenedor
+            document.getElementById('clinicCards').appendChild(card);
+
+            // Limpiar formulario y cerrar modal
+            event.target.reset();
+            toggleModal('addClinicModal');
+        }
+
+        function viewClinicDetails(name, address, phone, xCoordinate, yCoordinate, zone, weekStart, weekEnd, weekendStart, weekendEnd) {
+            const details = document.getElementById('clinicDetails');
+            details.innerHTML = `
+                <p><strong>Nombre:</strong> ${name}</p>
+                <p><strong>Dirección:</strong> ${address}</p>
+                <p><strong>Teléfono:</strong> ${phone}</p>
+                <p><strong>Coordenada X:</strong> ${xCoordinate}</p>
+                <p><strong>Coordenada Y:</strong> ${yCoordinate}</p>
+                <p><strong>Zona:</strong> ${zone}</p>
+                <p><strong>Horario Semana:</strong> ${weekStart} - ${weekEnd}</p>
+                <p><strong>Horario Fin de Semana:</strong> ${weekendStart} - ${weekendEnd}</p>
+            `;
+
+            // Abrir el modal de detalles
+            toggleModal('viewClinicModal');
+        }
+
+        function editClinic(name, address, phone, xCoordinate, yCoordinate, zone, weekStart, weekEnd, weekendStart, weekendEnd, cardElement) {
+            document.getElementById('clinicName').value = name;
+            document.getElementById('clinicAddress').value = address;
+            document.getElementById('clinicPhone').value = phone;
+            document.getElementById('clinicXCoord').value = xCoordinate;
+            document.getElementById('clinicYCoord').value = yCoordinate;
+            document.getElementById('clinicZone').value = zone;
+            document.getElementById('clinicStartWeek').value = weekStart;
+            document.getElementById('clinicEndWeek').value = weekEnd;
+            document.getElementById('clinicStartWeekend').value = weekendStart;
+            document.getElementById('clinicEndWeekend').value = weekendEnd;
+
+            // Eliminar la tarjeta existente
+            cardElement.remove();
+
+            // Abrir el modal para editar
+            toggleModal('addClinicModal');
+        }
+
+        function deleteClinic(cardElement) {
+            cardElement.remove();
+        }
+    </script>
+
+</body>
+</html>
