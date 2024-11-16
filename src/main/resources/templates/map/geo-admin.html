@@ -8,7 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 
-<body class="bg-gray-900 text-white font-sans">
+<body class="font-sans">
 
     <!-- Sidebar -->
     <div class="flex flex-col md:flex-row h-screen">
@@ -46,8 +46,14 @@
 
             <!-- Modal para agregar clínica -->
             <div id="addClinicModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
-                <div class="bg-gray-900 max-w-full border border-gray-300 p-6 rounded-lg">
+                <div class="bg-gray-900 max-w-full p-6 rounded-lg">
                     <form onsubmit="addClinic(event)">
+                        <!-- Botón para cerrar -->
+                        <button 
+                            class="flex w-full items-center justify-end text-white"
+                            onclick="closeModal('addClinicModal')">
+                            <p class="pr-4 text-xl font-bold hover:opacity-75">X</p>
+                        </button>
                         <h2 class="text-2xl font-semibold text-center text-white mb-6">Agregar Clínica Médica</h2>
                         <div class="max-w-lg mx-auto bg-gray-800 p-6 grid gap-6 grid-cols-2 rounded-lg">
                             <!-- Parte 1: Información General -->
@@ -129,6 +135,13 @@
         function toggleModal(modalId) {
             const modal = document.getElementById(modalId);
             modal.classList.toggle('hidden');
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('hidden'); // Ocultar modal
+            }
         }
 
         function addClinic(event) {

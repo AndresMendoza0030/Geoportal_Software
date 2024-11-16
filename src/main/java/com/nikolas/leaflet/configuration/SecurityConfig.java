@@ -33,7 +33,7 @@ private static final Logger logger = LoggerFactory.getLogger(UserService.class);
             .formLogin()
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/map/index", true)
+                .defaultSuccessUrl("/map/geo-admin", true)
                 .failureUrl("/login?error=true")
                 .permitAll()
             .and()
