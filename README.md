@@ -98,31 +98,11 @@ Recuerda que Geoportal de Centros de Asistencia Médica es un proyecto de códig
 
 ## Autores
 - Erick Rickelmy Vasquez Alfaro - 00065520@uca.edu.sv
-- David Alejandro Iglesias Moreno - 00047920@uca.edu.sv
+- David Neftali Rodriguez Rodriguez - 00218621@uca.edu.sv
 - Andrés Josué Mendoza Alvarado - 00305422@uca.edu.sv
-- Erick Fernando Quinteros Lizama - 00220619@uca.edu.sv
-
-## Identificación de roles en el grupo.
-   
-Coordinador del Grupo: Fernando Quinteros.
-
-Backend Developers: Andrés Mendoza y Erick Vasquez.
-
-Responsabilidades:
-
-● Desarrollar y mantener la lógica del servidor.
-
-● Crear y gestionar bases de datos.
-
-● Desarrollar APIs (Interfaces de Programación de Aplicaciones) para que el frontend pueda comunicarse con el backend.
-
-● Implementar la seguridad y la autenticación.
-
-● Optimizar el rendimiento del servidor y la base de datos.
-
-● Integrar servicios y sistemas externos.
-
-Frontend Developers: Fernando Quinteros y David Moreno.
+- César Adonay Zacatales López - 00223021@uca.edu.sv
+- Noe Bladimir Alas Moscoso - 00262020@uca.edu.sv
+- Gerardo André Orellana Vividor -00053520@uca.edu.sv
 
 Responsabilidades:
 
