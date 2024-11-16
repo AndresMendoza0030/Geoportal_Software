@@ -180,9 +180,4 @@ public class LeafletMapController {
         return mav;
     }
 
-    @GetMapping("/geo-admin")
-    public String geoAdmin() {
-        return "map/geo-admin";
-    }
-
 }
