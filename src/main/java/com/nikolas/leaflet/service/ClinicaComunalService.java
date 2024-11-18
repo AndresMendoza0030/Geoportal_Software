@@ -19,4 +19,7 @@ public interface ClinicaComunalService extends Serializable {
        // Nuevo método para paginación
     Page<ClinicaComunal> buscarPorMunicipio(String municipio, Pageable pageable);
     Page<ClinicaComunal> ClinicaComunalGetAll(Pageable pageable);
+    ClinicaComunal addClinicaComunal(ClinicaComunal clinicaComunal);
+    void deleteClinicaComunal(Integer id);
+    ClinicaComunal updateClinicaComunal(Integer id, ClinicaComunal clinicaComunal);
 }
