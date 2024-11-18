@@ -60,12 +60,6 @@
           </button>
         </div>
 
-        <!-- Cards de clínicas -->
-        <div
-          id="clinicCards"
-          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-        ></div>
-
         <div id="clinicTable" class="mt-6"></div>
 
         <div id="loadingMessage" class="text-center mt-4 hidden">
@@ -84,7 +78,9 @@
                 class="flex w-full items-center justify-end text-white"
                 onclick="toggleModal('addClinicModal')"
               >
-                <p class="pr-4 text-xl font-bold hover:opacity-75">X</p>
+                <p class="pr-4 text-xl font-bold hover:opacity-75">
+                  <i class="fa-solid fa-xmark text-2xl"></i>
+                </p>
               </button>
               <h2 class="text-2xl font-semibold text-center text-white mb-6">
                 Agregar Clínica Médica
@@ -122,14 +118,13 @@
                   </div>
                   <div class="mb-4">
                     <label
-                      for="clinicPhone"
+                      for="clinicAddress"
                       class="block text-sm font-medium mb-2 text-gray-300"
-                      >Teléfono</label
+                      >Municipio</label
                     >
                     <input
-                      type="number"
-                      oninput="validatePhoneLength(this)"
-                      id="clinicPhone"
+                      type="text"
+                      id="municipality"
                       class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
                       required
                     />
@@ -246,29 +241,6 @@
             </form>
           </div>
         </div>
-
-        <!-- Modal para ver detalles de la clínica -->
-        <div
-          id="viewClinicModal"
-          class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center"
-        >
-          <div
-            class="bg-gray-800 max-w-lg border border-gray-300 p-6 rounded-lg"
-          >
-            <div class="text-center text-2xl font-semibold text-white mb-6">
-              Detalles de la Clínica
-            </div>
-            <div id="clinicDetails" class="text-white space-y-2"></div>
-            <div class="text-center mt-4">
-              <button
-                onclick="toggleModal('viewClinicModal')"
-                class="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-              >
-                Cerrar
-              </button>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
     <script
@@ -284,9 +256,7 @@
         document.getElementById("loadingMessage").classList.remove("hidden");
         try {
           const response = await fetch("/clinicaComunal/all"); // Obtén datos del backend
-          const clinic = await response.json();
-
-          console.log(clinic);
+          const clinic = await response.json(); // Convierte la respuesta a JSON
 
           // Configuración de Tabulator
           const table = new Tabulator("#clinicTable", {
@@ -302,8 +272,8 @@
               { title: "Dirección", field: "direccion" },
               { title: "Coordenada X", field: "coorX" },
               { title: "Coordenada Y", field: "coorY" },
-              { title: "Teléfono", field: "telefono" },
               { title: "Zona", field: "zona" },
+              { title: "Municipio", field: "municipio" },
               {
                 title: "Horario de Semana",
                 field: "horarioSemana",
@@ -319,8 +289,8 @@
                 field: "horarioFinSemana",
                 formatter: function (cell) {
                   const data = cell.getData();
-                  return `${data.horarioInicioFinSemana || ""} - ${
-                    data.horarioFinFinSemana || ""
+                  return `${data.horarioInicioFinde || ""} - ${
+                    data.horarioFinFinde || ""
                   }`;
                 },
               },
@@ -331,26 +301,27 @@
                 formatter: function (cell) {
                   const data = cell.getRow().getData();
                   return `
-                                    <div class="flex items-center justify-center w-full">
-                                        <button class="hover:opacity-75 mr-2" onclick="editClinic(
-                                            '${data.nombre}',
-                                            '${data.direccion}',
-                                            '${data.telefono}',
-                                            '${data.coorX}',
-                                            '${data.coorY}',
-                                            '${data.zona}',
-                                            '${data.horarioInicioSemana}',
-                                            '${data.horarioFinSemana}',
-                                            '${data.horarioInicioFinSemana}',
-                                            '${data.horarioFinFinSemana}'
-                                        )">
-                                            <i class="fa-solid fa-pen-to-square"></i>
-                                        </button>
-                                        <button class="text-red-500 hover:text-red-700" onclick="deleteClinic('${data.id}')">
-                                            <i class="fa-solid fa-trash"></i>
-                                        </button>
-                                    </div>
-                                `;
+                        <div class="flex items-center justify-center w-full">
+                            <button class="hover:opacity-75 mr-2" onclick="editClinic(
+                                '${data.id}',
+                                '${data.nombre}',
+                                '${data.direccion}',
+                                '${data.coorX}',
+                                '${data.coorY}',
+                                '${data.zona}',
+                                '${data.horarioInicioSemana}',
+                                '${data.horarioFinSemana}',
+                                '${data.horarioInicioFinde}',
+                                '${data.horarioFinFinde}',
+                                '${data.municipio}'
+                            )">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button class="text-red-500 hover:text-red-700" onclick="deleteClinic('${data.id}')">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
                 },
               },
             ],
@@ -373,7 +344,6 @@
       function clearInput() {
         document.getElementById("clinicName").value = "";
         document.getElementById("clinicAddress").value = "";
-        document.getElementById("clinicPhone").value = "";
         document.getElementById("clinicXCoord").value = "";
         document.getElementById("clinicYCoord").value = "";
         document.getElementById("clinicZone").value = "";
@@ -389,7 +359,6 @@
         // Obtener valores del formulario
         const name = document.getElementById("clinicName").value;
         const address = document.getElementById("clinicAddress").value;
-        const phone = document.getElementById("clinicPhone").value;
         const xCoordinate = document.getElementById("clinicXCoord").value;
         const yCoordinate = document.getElementById("clinicYCoord").value;
         const zone = document.getElementById("clinicZone").value;
@@ -398,18 +367,19 @@
         const weekendStart =
           document.getElementById("clinicStartWeekend").value;
         const weekendEnd = document.getElementById("clinicEndWeekend").value;
+        const municipality = document.getElementById("municipality").value;
 
         const data = {
           nombre: name,
           direccion: address,
-          telefono: phone,
           coorX: xCoordinate,
           coorY: yCoordinate,
           zona: zone,
           horarioInicioSemana: weekStart,
           horarioFinSemana: weekEnd,
-          horarioInicioFinSemana: weekendStart,
-          horarioFinFinSemana: weekendEnd,
+          municipio: municipality,
+          horarioInicioFinde: weekendStart,
+          horarioFinFinde: weekendEnd,
         };
 
         // Crear la tarjeta de la clínica
@@ -437,38 +407,10 @@
         toggleModal("addClinicModal");
       }
 
-      function viewClinicDetails(
-        name,
-        address,
-        phone,
-        xCoordinate,
-        yCoordinate,
-        zone,
-        weekStart,
-        weekEnd,
-        weekendStart,
-        weekendEnd
-      ) {
-        const details = document.getElementById("clinicDetails");
-        details.innerHTML = `
-                <p><strong>Nombre:</strong> ${name}</p>
-                <p><strong>Dirección:</strong> ${address}</p>
-                <p><strong>Teléfono:</strong> ${phone}</p>
-                <p><strong>Coordenada X:</strong> ${xCoordinate}</p>
-                <p><strong>Coordenada Y:</strong> ${yCoordinate}</p>
-                <p><strong>Zona:</strong> ${zone}</p>
-                <p><strong>Horario Semana:</strong> ${weekStart} - ${weekEnd}</p>
-                <p><strong>Horario Fin de Semana:</strong> ${weekendStart} - ${weekendEnd}</p>
-            `;
-
-        // Abrir el modal de detalles
-        toggleModal("viewClinicModal");
-      }
-
       function editClinic(
+        id,
         name,
         address,
-        phone,
         xCoordinate,
         yCoordinate,
         zone,
@@ -476,11 +418,10 @@
         weekEnd,
         weekendStart,
         weekendEnd,
-        cardElement
+        municipality
       ) {
         document.getElementById("clinicName").value = name;
         document.getElementById("clinicAddress").value = address;
-        document.getElementById("clinicPhone").value = phone;
         document.getElementById("clinicXCoord").value = xCoordinate;
         document.getElementById("clinicYCoord").value = yCoordinate;
         document.getElementById("clinicZone").value = zone;
@@ -488,19 +429,81 @@
         document.getElementById("clinicEndWeek").value = weekEnd;
         document.getElementById("clinicStartWeekend").value = weekendStart;
         document.getElementById("clinicEndWeekend").value = weekendEnd;
+        document.getElementById("municipality").value = municipality;
 
         // Abrir el modal para editar
         toggleModal("addClinicModal");
       }
 
-      function deleteClinic(id) {
-        console.log(id);
+      async function editModalClinic(event) {
+        event.preventDefault();
+
+        // Obtener valores del formulario
+        const name = document.getElementById("clinicName").value;
+        const address = document.getElementById("clinicAddress").value;
+        const xCoordinate = document.getElementById("clinicXCoord").value;
+        const yCoordinate = document.getElementById("clinicYCoord").value;
+        const zone = document.getElementById("clinicZone").value;
+        const weekStart = document.getElementById("clinicStartWeek").value;
+        const weekEnd = document.getElementById("clinicEndWeek").value;
+        const weekendStart =
+          document.getElementById("clinicStartWeekend").value;
+        const weekendEnd = document.getElementById("clinicEndWeekend").value;
+        const municipality = document.getElementById("municipality").value;
+
+        const data = {
+          nombre: name,
+          direccion: address,
+          coorX: xCoordinate,
+          coorY: yCoordinate,
+          zona: zone,
+          horarioInicioSemana: weekStart,
+          horarioFinSemana: weekEnd,
+          municipio: municipality,
+          horarioInicioFinde: weekendStart,
+          horarioFinFinde: weekendEnd,
+        };
+
+        // Crear la tarjeta de la clínica
+        const response = await fetch("/clinicaComunal/update", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+          console.error("Error al editar la clínica");
+          alert("Hubo un error al editar la clínica.");
+          return;
+        }
+
+        // Recargar la tabla
+        loadTable();
+
+        // Limpiar formulario y cerrar modal
+        clearInput();
+        toggleModal("addClinicModal");
       }
 
-      function validatePhoneLength(input) {
-        if (input.value.length > 8) {
-          input.value = input.value.slice(0, 8); // Trunca a 8 dígitos
+      async function deleteClinic(id) {
+        if (!confirm("¿Estás seguro de eliminar esta clínica?")) {
+          return;
         }
+
+        const response = await fetch(`/clinicaComunal/delete/${id}`, {
+          method: "DELETE",
+        });
+
+        if (!response.ok) {
+          console.error("Error al eliminar la clínica");
+          alert("Hubo un error al eliminar la clínica.");
+          return;
+        }
+
+        // Recargar la tabla
+        loadTable();
       }
     </script>
   </body>

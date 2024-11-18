@@ -63,7 +63,7 @@ public class ClinicaComunalServiceImpl implements ClinicaComunalService {
 
     @Override
     public void deleteClinicaComunal(Integer id) {
-        ClinicaComunalRepository.deleteClinicaComunal(id);
+        ClinicaComunalRepository.deleteById(id);
     }
 
     @Override

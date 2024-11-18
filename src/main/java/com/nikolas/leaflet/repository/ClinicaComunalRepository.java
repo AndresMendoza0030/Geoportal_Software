@@ -35,10 +35,6 @@ public interface ClinicaComunalRepository extends JpaRepository<ClinicaComunal, 
     Page<ClinicaComunal> findAll(Pageable pageable);
 
     @Modifying
-    @Query("DELETE FROM ClinicaComunal c WHERE c.id = :id")
-    void deleteClinicaComunal(Integer id);
-
-    @Modifying
     @Query("UPDATE ClinicaComunal c SET c.nombre = :nombre, c.direccion = :direccion, c.municipio = :municipio, c.zona = :zona, c.coorX = :coorX, c.coorY = :coorY, c.horarioInicioSemana = :horarioInicioSemana, c.horarioFinSemana = :horarioFinSemana, c.horarioInicioFinde = :horarioInicioFinde, c.horarioFinFinde = :horarioFinFinde WHERE c.id = :id")
     void updateClinicaComunal(@Param("id") Integer id,
             @Param("nombre") String nombre,
