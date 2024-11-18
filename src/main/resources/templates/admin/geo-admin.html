@@ -82,7 +82,10 @@
                   <i class="fa-solid fa-xmark text-2xl"></i>
                 </p>
               </button>
-              <h2 class="text-2xl font-semibold text-center text-white mb-6">
+              <h2
+                id="title-modal"
+                class="text-2xl font-semibold text-center text-white mb-6"
+              >
                 Agregar Clínica Médica
               </h2>
               <div
@@ -391,8 +394,6 @@
           body: JSON.stringify(data),
         });
 
-        console.log(response);
-
         if (!response.ok) {
           console.error("Error al agregar la clínica");
           alert("Hubo un error al agregar la clínica.");
@@ -431,11 +432,21 @@
         document.getElementById("clinicEndWeekend").value = weekendEnd;
         document.getElementById("municipality").value = municipality;
 
+        document.getElementById("title-modal").innerText =
+          "Editar Clínica Médica";
+
+        const submitButton = document.querySelector(
+          "form button[type='submit']"
+        );
+        submitButton.innerText = "Guardar Cambios";
+
+        submitButton.onclick = (event) => editModalClinic(event, id);
+
         // Abrir el modal para editar
         toggleModal("addClinicModal");
       }
 
-      async function editModalClinic(event) {
+      async function editModalClinic(event, clinicId) {
         event.preventDefault();
 
         // Obtener valores del formulario
@@ -464,27 +475,32 @@
           horarioFinFinde: weekendEnd,
         };
 
-        // Crear la tarjeta de la clínica
-        const response = await fetch("/clinicaComunal/update", {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        });
+        try {
+          // Enviar solicitud PUT al endpoint correcto con el ID de la clínica
+          const response = await fetch(`/clinicaComunal/update/${clinicId}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
 
-        if (!response.ok) {
-          console.error("Error al editar la clínica");
+          if (!response.ok) {
+            throw new Error("Error al editar la clínica");
+          }
+
+          // Recargar la tabla
+          loadTable();
+
+          // Limpiar formulario y cerrar modal
+          clearInput();
+          toggleModal("addClinicModal");
+
+          alert("Clínica editada correctamente.");
+        } catch (error) {
+          console.error("Error al editar la clínica:", error);
           alert("Hubo un error al editar la clínica.");
-          return;
         }
-
-        // Recargar la tabla
-        loadTable();
-
-        // Limpiar formulario y cerrar modal
-        clearInput();
-        toggleModal("addClinicModal");
       }
 
       async function deleteClinic(id) {

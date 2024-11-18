@@ -74,9 +74,9 @@ public class ClinicaComunalController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<ClinicaComunal> updateClinicaComunal(@RequestBody ClinicaComunal clinicaComunal) {
-        ClinicaComunal clinica = ClinicaComunalService.updateClinicaComunal(clinicaComunal.getId(), clinicaComunal);
+    @PutMapping("/update/{id}")
+    public ResponseEntity<ClinicaComunal> updateClinicaComunal(@PathVariable Integer id, @RequestBody ClinicaComunal clinicaComunal) {
+        ClinicaComunal clinica = ClinicaComunalService.updateClinicaComunal(id, clinicaComunal);
         return ResponseEntity.ok(clinica);
     }
 
