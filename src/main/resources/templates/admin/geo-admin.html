@@ -62,7 +62,10 @@
 
         <div id="clinicTable" class="mt-6"></div>
 
-        <div id="loadingMessage" class="text-center mt-4 hidden">
+        <div
+          id="loadingMessage"
+          class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white hidden"
+        >
           <span class="text-lg">Cargando...</span>
         </div>
 
@@ -359,6 +362,10 @@
       async function addClinic(event) {
         event.preventDefault();
 
+        const button = event.target.querySelector("button[type='submit']");
+        button.disabled = true;
+        button.textContent = "Agregando...";
+
         // Obtener valores del formulario
         const name = document.getElementById("clinicName").value;
         const address = document.getElementById("clinicAddress").value;
@@ -385,27 +392,35 @@
           horarioFinFinde: weekendEnd,
         };
 
-        // Crear la tarjeta de la clínica
-        const response = await fetch("/clinicaComunal/add", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        });
+        try {
+          // Crear la tarjeta de la clínica
+          const response = await fetch("/clinicaComunal/add", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
 
-        if (!response.ok) {
-          console.error("Error al agregar la clínica");
+          if (!response.ok) {
+            throw new Error("Error al agregar la clínica");
+          }
+
+          // Recargar la tabla
+          loadTable();
+
+          // Limpiar formulario y cerrar modal
+          clearInput();
+          toggleModal("addClinicModal");
+
+          alert("Clínica agregada correctamente.");
+        } catch (error) {
+          console.error("Error al agregar la clínica:", error);
           alert("Hubo un error al agregar la clínica.");
-          return;
+        } finally {
+          button.disabled = false;
+          button.textContent = "Agregar Clínica";
         }
-
-        // Recargar la tabla
-        loadTable();
-
-        // Limpiar formulario y cerrar modal
-        clearInput();
-        toggleModal("addClinicModal");
       }
 
       function editClinic(
@@ -449,6 +464,13 @@
       async function editModalClinic(event, clinicId) {
         event.preventDefault();
 
+        const button = document.querySelector("form button[type='submit']");
+
+        console.log(button);
+
+        button.disabled = true;
+        button.textContent = "Actualizando...";
+
         // Obtener valores del formulario
         const name = document.getElementById("clinicName").value;
         const address = document.getElementById("clinicAddress").value;
@@ -476,6 +498,9 @@
         };
 
         try {
+          // Mostrar el mensaje de carga
+          loadingMessage.classList.remove("hidden");
+
           // Enviar solicitud PUT al endpoint correcto con el ID de la clínica
           const response = await fetch(`/clinicaComunal/update/${clinicId}`, {
             method: "PUT",
@@ -500,26 +525,45 @@
         } catch (error) {
           console.error("Error al editar la clínica:", error);
           alert("Hubo un error al editar la clínica.");
+        } finally {
+          button.disabled = false;
+          button.textContent = "Guardar Cambios";
         }
       }
 
       async function deleteClinic(id) {
+        // Obtener el elemento del mensaje de carga
+        const loadingMessage = document.getElementById("loadingMessage");
+
+        // Confirmar eliminación
         if (!confirm("¿Estás seguro de eliminar esta clínica?")) {
           return;
         }
 
-        const response = await fetch(`/clinicaComunal/delete/${id}`, {
-          method: "DELETE",
-        });
+        try {
+          // Mostrar el mensaje de carga
+          loadingMessage.classList.remove("hidden");
 
-        if (!response.ok) {
-          console.error("Error al eliminar la clínica");
-          alert("Hubo un error al eliminar la clínica.");
-          return;
+          // Hacer la solicitud de eliminación
+          const response = await fetch(`/clinicaComunal/delete/${id}`, {
+            method: "DELETE",
+          });
+
+          if (!response.ok) {
+            console.error("Error al eliminar la clínica");
+            alert("Hubo un error al eliminar la clínica.");
+            return;
+          }
+
+          // Recargar la tabla después de eliminar
+          loadTable();
+        } catch (error) {
+          console.error("Error al eliminar la clínica:", error);
+          alert("Hubo un error inesperado al eliminar la clínica.");
+        } finally {
+          // Ocultar el mensaje de carga
+          loadingMessage.classList.add("hidden");
         }
-
-        // Recargar la tabla
-        loadTable();
       }
     </script>
   </body>
