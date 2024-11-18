@@ -109,11 +109,8 @@
                 <p><strong>Dirección:</strong> <span th:text="${clinica.direccion}">Dirección de la Clínica</span></p>
                 <p><strong>Municipio:</strong> <span th:text="${clinica.municipio}">Municipio de la Clínica</span></p>
                 <p><strong>Zona:</strong> <span th:text="${clinica.zona}">Zona de la Clínica</span></p>
-                <details class="mb-4">
-                <summary><strong>Horario: </strong><span th:text="${clinica.horarioInicioSemana}">Horario Inicio Semana</span> - <span th:text="${clinica.horarioFinSemana}">Horario Fin Semana</span></summary>
-               
-                <summary><strong>Horario fines de semana:</strong> <span th:text="${clinica.horarioInicioFinde}">Horario Inicio Fines de Semana</span> - <span th:text="${clinica.horarioFinFinde}">Horario Fin Fines de Semana</span></summary>
-                </details>
+                <p><strong>Horario: </strong><span th:text="${clinica.horarioInicioSemana}">Horario Inicio Semana</span> - <span th:text="${clinica.horarioFinSemana}">Horario Fin Semana</span></p>
+                <p><strong>Horario fines de semana:</strong> <span th:text="${clinica.horarioInicioFinde}">Horario Inicio Fines de Semana</span> - <span th:text="${clinica.horarioFinFinde}">Horario Fin Fines de Semana</span></p>
             </div>
         </div>
     </div>
