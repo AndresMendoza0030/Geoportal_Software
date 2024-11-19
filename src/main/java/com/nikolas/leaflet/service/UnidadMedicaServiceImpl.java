@@ -1,8 +1,6 @@
 package com.nikolas.leaflet.service;
 
-import com.nikolas.leaflet.domain.ClinicaComunal;
 import com.nikolas.leaflet.domain.UnidadMedica;
-import com.nikolas.leaflet.repository.ClinicaComunalRepository;
 import com.nikolas.leaflet.repository.UnidadMedicaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,38 +13,71 @@ import java.util.Optional;
 @Component
 public class UnidadMedicaServiceImpl implements UnidadMedicaService {
     @Autowired
-    private UnidadMedicaRepository unidadMedicaRepository;
+    private UnidadMedicaRepository UnidadMedicaRepository;
+
+    @Override
+    public Optional<UnidadMedica> getUnidadMedicaById(Integer id) {
+        return UnidadMedicaRepository.findById(id);
+    }
+
+    @Override
+    public List<UnidadMedica> getAllEntidadesMedicas() {
+        return UnidadMedicaRepository.findAll();
+    }
+
+    @Override
+    public List<UnidadMedica> buscarPorNombre(String nombre) {
+        return UnidadMedicaRepository.findByNombreContaining(nombre);
+    }
 
     @Override
     public List<UnidadMedica> buscarPorMunicipio(String municipio) {
-        return unidadMedicaRepository.findByMunicipio(municipio);
+        return UnidadMedicaRepository.findByMunicipio(municipio);
     }
 
-    @Override
-    public Optional<UnidadMedica> unidadMedicaGetOne(Integer id) {
-        return unidadMedicaRepository.findById(id);
-    }
-
-    @Override
-    public List<UnidadMedica> unidadMedicaGetAll() {
-        return unidadMedicaRepository.findAll();
-    }
-    
-    // Implementación del nuevo método de paginación
     @Override
     public Page<UnidadMedica> buscarPorMunicipio(String municipio, Pageable pageable) {
-        return unidadMedicaRepository.findByMunicipio(municipio, pageable);
+        return UnidadMedicaRepository.findByMunicipio(municipio, pageable);
     }
-     // Implementación del nuevo método de paginación
-     @Override
-     public Page<UnidadMedica> unidadMedicaGetAll(Pageable pageable) {
-         return unidadMedicaRepository.findAll(pageable);
-     }
-      public List<String> getDistinctMunicipios() {
-        return  unidadMedicaRepository.findDistinctMunicipios();
-    }
+
     @Override
-    public List<UnidadMedica>  findByNombreContaining(String nombre) {
-        return unidadMedicaRepository.findByNombreContaining(nombre);
+    public Page<UnidadMedica> getAllEntidadesMedicas(Pageable pageable) {
+        return UnidadMedicaRepository.findAll(pageable);
+    }
+
+    @Override
+    public UnidadMedica addUnidadMedica(UnidadMedica UnidadMedica) {
+        return UnidadMedicaRepository.save(UnidadMedica);
+    }
+
+    @Override
+    public void deleteUnidadMedica(Integer id) {
+        UnidadMedicaRepository.deleteById(id);
+    }
+
+    @Override
+    public UnidadMedica updateUnidadMedica(Integer id, UnidadMedica UnidadMedica) {
+        Optional<UnidadMedica> existingUnidadMedicaOpt = UnidadMedicaRepository.findById(id);
+        if (existingUnidadMedicaOpt.isPresent()) {
+            UnidadMedica existingUnidadMedica = existingUnidadMedicaOpt.get();
+            existingUnidadMedica.setNombre(UnidadMedica.getNombre());
+            existingUnidadMedica.setDireccion(UnidadMedica.getDireccion());
+            existingUnidadMedica.setMunicipio(UnidadMedica.getMunicipio());
+            existingUnidadMedica.setZona(UnidadMedica.getZona());
+            existingUnidadMedica.setCoorX(UnidadMedica.getCoorX());
+            existingUnidadMedica.setCoorY(UnidadMedica.getCoorY());
+            existingUnidadMedica.setHorarioInicioSemana(UnidadMedica.getHorarioInicioSemana());
+            existingUnidadMedica.setHorarioFinSemana(UnidadMedica.getHorarioFinSemana());
+            existingUnidadMedica.setHorarioInicioFinde(UnidadMedica.getHorarioInicioFinde());
+            existingUnidadMedica.setHorarioFinFinde(UnidadMedica.getHorarioFinFinde());
+            return UnidadMedicaRepository.save(existingUnidadMedica);
+        } else {
+            throw new RuntimeException("UnidadMedica no encontrada con ID " + id);
+        }
+    }
+
+    @Override
+    public List<String> getDistinctMunicipios() {
+        return UnidadMedicaRepository.findDistinctMunicipios();
     }
 }

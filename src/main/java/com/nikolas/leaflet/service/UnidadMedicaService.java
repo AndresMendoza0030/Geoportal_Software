@@ -10,12 +10,23 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UnidadMedicaService extends Serializable {
-    Optional<UnidadMedica> unidadMedicaGetOne(Integer id);
-    List<UnidadMedica> unidadMedicaGetAll();
+    Optional<UnidadMedica> getUnidadMedicaById(Integer id);
+
+    List<UnidadMedica> getAllEntidadesMedicas();
+
+    List<String> getDistinctMunicipios();
+
+    List<UnidadMedica> buscarPorNombre(String nombre);
+
     List<UnidadMedica> buscarPorMunicipio(String municipio);
-    List<UnidadMedica> findByNombreContaining(String nombre);
-    List<String> getDistinctMunicipios(); 
-    // Nuevo método para paginación
+
     Page<UnidadMedica> buscarPorMunicipio(String municipio, Pageable pageable);
-    Page<UnidadMedica> unidadMedicaGetAll(Pageable pageable);
+
+    Page<UnidadMedica> getAllEntidadesMedicas(Pageable pageable);
+
+    UnidadMedica addUnidadMedica(UnidadMedica UnidadMedica);
+
+    void deleteUnidadMedica(Integer id);
+
+    UnidadMedica updateUnidadMedica(Integer id, UnidadMedica UnidadMedica);
 }

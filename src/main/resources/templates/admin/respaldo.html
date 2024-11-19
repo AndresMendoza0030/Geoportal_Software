@@ -27,13 +27,15 @@
         </div>
         <nav class="space-y-2">
           <a
-            href="/admin/unidMedic"
+            href="#"
+            id="unidadesMedicasLink"
             class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md"
           >
             <span>Unidades Médicas</span>
           </a>
           <a
-            href="/admin/clinicMedic"
+            href="#"
+            id="clinicasMedicasLink"
             class="flex items-center p-2 text-gray-300 bg-gray-700 rounded-md"
           >
             <span>Clínicas Médicas</span>
@@ -48,9 +50,9 @@
       </aside>
 
       <!-- Main content -->
-      <div class="flex-1 p-6 w-full overflow-x-auto">
+      <div id="tableContainer" class="flex-1 p-6 w-full overflow-x-auto">
         <div class="flex justify-between items-center mb-6">
-          <h1 class="text-2xl font-semibold">Gestión de Clínicas Médicas</h1>
+          <h1 class="text-2xl font-semibold">Gestión de Unidades/Clínicas Médicas</h1>
           <!-- Botón para agregar clínica -->
           <button
             onclick="toggleModal('addClinicModal')"
@@ -60,6 +62,7 @@
           </button>
         </div>
 
+        <div id="unitTable" class="mt-6"></div>
         <div id="clinicTable" class="mt-6"></div>
 
         <div
@@ -256,53 +259,73 @@
       src="https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js"
     ></script>
     <script>
-      // Llama a la función cuando se cargue la página
-      document.addEventListener("DOMContentLoaded", loadTable);
+let clinicTable;  // Variable global para la tabla de Clínicas Médicas
+let unitTable;     // Variable global para la tabla de Unidades Médicas
 
-      // Función para inicializar la tabla
-      async function loadTable() {
-        document.getElementById("loadingMessage").classList.remove("hidden");
-        try {
-          const response = await fetch("/clinicaComunal/all"); // Obtén datos del backend
-          const clinic = await response.json(); // Convierte la respuesta a JSON
+// Función para limpiar el contenedor y cargar la nueva tabla
+function clearAndLoadTable(tableId) {
+  document.getElementById("loadingMessage").classList.remove("hidden");
+  
+  // Limpiar cualquier tabla previa (ocultar contenedores)
+  if (clinicTable) {
+    clinicTable.destroy();  // Destruir la tabla de Clínicas Médicas
+  }
+  if (unitTable) {
+    unitTable.destroy();     // Destruir la tabla de Unidades Médicas
+  }
 
-          // Configuración de Tabulator
-          const table = new Tabulator("#clinicTable", {
-            data: clinic, // Datos JSON de las clínicas
-            layout: "fitData",
-            placeholder: "No hay datos disponibles",
-            scrollHorizontal: true,
-            height: "90%",
-            initialSort: [{ column: "id", dir: "desc" }],
-            columns: [
-              { title: "ID", field: "id", width: 50, sorter: "number" },
-              { title: "Nombre", field: "nombre" },
-              { title: "Dirección", field: "direccion" },
-              { title: "Coordenada X", field: "coorX" },
-              { title: "Coordenada Y", field: "coorY" },
-              { title: "Zona", field: "zona" },
-              { title: "Municipio", field: "municipio" },
-              {
-                title: "Horario de Semana",
-                field: "horarioSemana",
-                formatter: function (cell) {
-                  const data = cell.getData();
-                  return `${data.horarioInicioSemana || ""} - ${
-                    data.horarioFinSemana || ""
-                  }`;
-                },
-              },
-              {
-                title: "Horario Fin de Semana",
-                field: "horarioFinSemana",
-                formatter: function (cell) {
-                  const data = cell.getData();
-                  return `${data.horarioInicioFinde || ""} - ${
-                    data.horarioFinFinde || ""
-                  }`;
-                },
-              },
-              {
+  // Ocultar todos los contenedores de tablas
+  document.getElementById("clinicTable").classList.add("hidden");
+  document.getElementById("unitTable").classList.add("hidden");
+
+  // Mostrar solo el contenedor de la tabla correspondiente
+  if (tableId === 'clinicas') {
+    document.getElementById("clinicTable").classList.remove("hidden");
+    loadclinicTable();  // Cargar datos de Clínicas Médicas
+  } else if (tableId === 'unidades') {
+    document.getElementById("unitTable").classList.remove("hidden");
+    loadUnitTable();     // Cargar datos de Unidades Médicas
+  }
+}
+
+// Función para cargar la tabla de Clínicas Médicas
+async function loadclinicTable() {
+  try {
+    const response = await fetch("/clinicaComunal/all");
+    const clinicas = await response.json();
+
+    clinicTable = new Tabulator("#clinicTable", {
+      data: clinicas,
+      layout: "fitData",
+      placeholder: "No hay datos disponibles",
+      scrollHorizontal: true,
+      height: "90%",
+      initialSort: [{ column: "id", dir: "desc" }],
+      columns: [
+        { title: "ID", field: "id", width: 50, sorter: "number" },
+        { title: "Nombre", field: "nombre" },
+        { title: "Dirección", field: "direccion" },
+        { title: "Zona", field: "zona" },
+        { title: "Coordenada X", field: "coorX" },
+        { title: "Coordenada Y", field: "coorY" },
+        { title: "Municipio", field: "municipio" },
+        {
+          title: "Horario de Semana",
+          field: "horarioSemana",
+          formatter: function (cell) {
+            const data = cell.getData();
+            return `${data.horarioInicioSemana || ""} - ${data.horarioFinSemana || ""}`;
+          },
+        },
+        {
+          title: "Horario Fin de Semana",
+          field: "horarioFinSemana",
+          formatter: function (cell) {
+            const data = cell.getData();
+            return `${data.horarioInicioFinde || ""} - ${data.horarioFinFinde || ""}`;
+          },
+        },
+        {
                 title: "Acciones",
                 field: "acciones",
                 width: 100,
@@ -332,14 +355,108 @@
                     `;
                 },
               },
-            ],
-          });
-        } catch (error) {
-          console.error("Error al cargar los datos:", error);
-        } finally {
-          document.getElementById("loadingMessage").classList.add("hidden");
+      ],
+    });
+  } catch (error) {
+    console.error("Error al cargar las clínicas:", error);
+  } finally {
+    document.getElementById("loadingMessage").classList.add("hidden");
+  }
+}
+
+// Función para cargar la tabla de Unidades Médicas
+async function loadUnitTable() {
+  try {
+    const response = await fetch("/unidadMedica/all");
+    const units = await response.json();
+
+    unitTable = new Tabulator("#unitTable", {
+      data: units,
+      layout: "fitData",
+      placeholder: "No hay datos disponibles",
+      scrollHorizontal: true,
+      height: "90%",
+      initialSort: [{ column: "id", dir: "desc" }],
+      columns: [
+        { title: "ID", field: "id", width: 50, sorter: "number" },
+        { title: "Nombre", field: "nombre" },
+        { title: "Dirección", field: "direccion" },
+        { title: "Coordenada X", field: "coorX" },
+        { title: "Coordenada Y", field: "coorY" },
+        { title: "Zona", field: "zona" },
+        { title: "Municipio", field: "municipio" },
+        {
+          title: "Horario de Semana",
+          field: "horarioSemana",
+          formatter: function (cell) {
+            const data = cell.getData();
+            return `${data.horarioInicioSemana || ""} - ${data.horarioFinSemana || ""}`;
+          },
+        },
+        {
+          title: "Horario Fin de Semana",
+          field: "horarioFinSemana",
+          formatter: function (cell) {
+            const data = cell.getData();
+            return `${data.horarioInicioFinde || ""} - ${data.horarioFinFinde || ""}`;
+          },
+        },
+        {
+          title: "Acciones",
+                field: "acciones",
+                width: 100,
+                formatter: function (cell) {
+                  const data = cell.getRow().getData();
+                  return `
+                        <div class="flex items-center justify-center w-full">
+                            <button class="hover:opacity-75 mr-2" onclick="editUnit(
+                                '${data.id}',
+                                '${data.nombre}',
+                                '${data.direccion}',
+                                '${data.coorX}',
+                                '${data.coorY}',
+                                '${data.zona}',
+                                '${data.horarioInicioSemana}',
+                                '${data.horarioFinSemana}',
+                                '${data.horarioInicioFinde}',
+                                '${data.horarioFinFinde}',
+                                '${data.municipio}'
+                            )">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button class="text-red-500 hover:text-red-700" onclick="deleteUnit('${data.id}')">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                }, 
         }
-      }
+      ],
+    });
+  } catch (error) {
+    console.error("Error al cargar las Unidades Médicas:", error);
+  } finally {
+    document.getElementById("loadingMessage").classList.add("hidden");
+  }
+}
+
+// Listener para Clínicas Médicas
+document.getElementById('clinicasMedicasLink').addEventListener('click', () => {
+  clearAndLoadTable('clinicas');  // Limpiar y cargar Clínicas Médicas
+});
+
+// Listener para Unidades Médicas
+document.getElementById('unidadesMedicasLink').addEventListener('click', () => {
+  clearAndLoadTable('unidades');  // Limpiar y cargar Unidades Médicas
+});
+
+// Cargar la tabla por defecto (Clínicas Médicas) cuando se carga la página
+window.addEventListener('DOMContentLoaded', () => {
+  clearAndLoadTable('clinicas');
+});
+
+
+
 
       function toggleModal(modalId) {
         const modal = document.getElementById(modalId);
@@ -348,6 +465,7 @@
         }
         modal.classList.toggle("hidden");
       }
+      
 
       function clearInput() {
         document.getElementById("clinicName").value = "";
@@ -410,7 +528,7 @@
           }
 
           // Recargar la tabla
-          loadTable();
+          loadclinicTable();
 
           // Limpiar formulario y cerrar modal
           clearInput();
@@ -425,6 +543,69 @@
           button.textContent = "Agregar Clínica";
         }
       }
+
+      async function addUnit(event) {
+        event.preventDefault();
+
+        const button = event.target.querySelector("button[type='submit']");
+        button.disabled = true;
+        button.textContent = "Agregando...";
+
+        // Obtener valores del formulario
+        const name = document.getElementById("unitName").value;
+        const address = document.getElementById("unitAddress").value;
+        const xCoordinate = document.getElementById("unitXCoord").value;
+        const yCoordinate = document.getElementById("unitYCoord").value;
+        const zone = document.getElementById("unitZone").value;
+        const weekStart = document.getElementById("unitStartWeek").value;
+        const weekEnd = document.getElementById("unitEndWeek").value;
+        const weekendStart = document.getElementById("unitStartWeekend").value;
+        const weekendEnd = document.getElementById("unitEndWeekend").value;
+        const municipality = document.getElementById("municipality").value;
+
+        const data = {
+          nombre: name,
+          direccion: address,
+          coorX: xCoordinate,
+          coorY: yCoordinate,
+          zona: zone,
+          horarioInicioSemana: weekStart,
+          horarioFinSemana: weekEnd,
+          municipio: municipality,
+          horarioInicioFinde: weekendStart,
+          horarioFinFinde: weekendEnd,
+        };
+
+        try {
+          // Crear la tarjeta de la unidad médica
+          const response = await fetch("/unidadMedica/add", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+
+          if (!response.ok) {
+            throw new Error("Error al agregar la unidad médica");
+          }
+
+          // Recargar la tabla
+          loadUnitTable();
+
+          // Limpiar formulario y cerrar modal
+          clearInput();
+          toggleModal("addUnitModal");
+
+          alert("Unidad médica agregada correctamente.");
+        } catch (error) {
+          console.error("Error al agregar la unidad médica:", error);
+          alert("Hubo un error al agregar la unidad médica.");
+        } finally {
+          button.disabled = false;
+          button.textContent = "Agregar Unidad Médica";
+        }
+      } 
 
       function editClinic(
         id,
@@ -462,6 +643,44 @@
 
         // Abrir el modal para editar
         toggleModal("addClinicModal");
+      }
+
+      function editUnit(
+        id,
+        name,
+        address,
+        xCoordinate,
+        yCoordinate,
+        zone,
+        weekStart,
+        weekEnd,
+        weekendStart,
+        weekendEnd,
+        municipality
+      ) {
+        document.getElementById("unitName").value = name;
+        document.getElementById("unitAddress").value = address;
+        document.getElementById("unitXCoord").value = xCoordinate;
+        document.getElementById("unitYCoord").value = yCoordinate;
+        document.getElementById("unitZone").value = zone;
+        document.getElementById("unitStartWeek").value = weekStart;
+        document.getElementById("unitEndWeek").value = weekEnd;
+        document.getElementById("unitStartWeekend").value = weekendStart;
+        document.getElementById("unitEndWeekend").value = weekendEnd;
+        document.getElementById("municipality").value = municipality;
+
+        document.getElementById("title-modal").innerText =
+          "Editar Unidad Médica";
+
+        const submitButton = document.querySelector(
+          "form button[type='submit']"
+        );
+        submitButton.innerText = "Guardar Cambios";
+
+        submitButton.onclick = (event) => editModalUnit(event, id);
+
+        // Abrir el modal para editar
+        toggleModal("addUnitModal");
       }
 
       async function editModalClinic(event, clinicId) {
@@ -518,7 +737,7 @@
           }
 
           // Recargar la tabla
-          loadTable();
+          loadclinicTable();
 
           // Limpiar formulario y cerrar modal
           clearInput();
@@ -534,6 +753,107 @@
         }
       }
 
+      async function editModalUnit(event, unitId) {
+        event.preventDefault();
+
+        const button = document.querySelector("form button[type='submit']");
+
+        button.disabled = true;
+        button.textContent = "Actualizando...";
+
+        // Obtener valores del formulario
+        const name = document.getElementById("unitName").value;
+        const address = document.getElementById("unitAddress").value;
+        const xCoordinate = document.getElementById("unitXCoord").value;
+        const yCoordinate = document.getElementById("unitYCoord").value;
+        const zone = document.getElementById("unitZone").value;
+        const weekStart = document.getElementById("unitStartWeek").value;
+        const weekEnd = document.getElementById("unitEndWeek").value;
+        const weekendStart = document.getElementById("unitStartWeekend").value;
+        const weekendEnd = document.getElementById("unitEndWeekend").value;
+        const municipality = document.getElementById("municipality").value;
+
+        const data = {
+          nombre: name,
+          direccion: address,
+          coorX: xCoordinate,
+          coorY: yCoordinate,
+          zona: zone,
+          horarioInicioSemana: weekStart,
+          horarioFinSemana: weekEnd,
+          municipio: municipality,
+          horarioInicioFinde: weekendStart,
+          horarioFinFinde: weekendEnd,
+        };
+
+        try {
+          // Mostrar el mensaje de carga
+          loadingMessage.classList.remove("hidden");
+
+          // Enviar solicitud PUT al endpoint correcto con el ID de la unidad médica
+          const response = await fetch(`/unidadMedica/update/${unitId}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+
+          if (!response.ok) {
+            throw new Error("Error al editar la unidad médica");
+          }
+
+          // Recargar la tabla
+          loadUnitTable();
+
+          // Limpiar formulario y cerrar modal
+          clearInput();
+          toggleModal("addUnitModal");
+
+          alert("Unidad médica editada correctamente.");
+        } catch (error) {
+          console.error("Error al editar la unidad médica:", error);
+          alert("Hubo un error al editar la unidad médica.");
+        } finally {
+          button.disabled = false;
+          button.textContent = "Guardar Cambios";
+        }
+      }
+
+      async function deleteUnit(id){
+        // Obtener el elemento del mensaje de carga
+        const loadingMessage = document.getElementById("loadingMessage");
+
+        // Confirmar eliminación
+        if (!confirm("¿Estás seguro de eliminar esta unidad médica?")) {
+          return;
+        }
+        try {
+          // Mostrar el mensaje de carga
+          loadingMessage.classList.remove("hidden");
+
+          // Hacer la solicitud de eliminación
+          const response = await fetch(`/unidadMedica/delete/${id}`, {
+            method: "DELETE",
+          });
+
+          if (!response.ok) {
+            console.error("Error al eliminar la unidad médica");
+            alert("Hubo un error al eliminar la unidad médica.");
+            return;
+          }
+
+          // Recargar la tabla después de eliminar
+          loadUnitTable();
+        } catch (error) {
+          console.error("Error al eliminar la unidad médica:", error);
+          alert("Hubo un error inesperado al eliminar la unidad médica.");
+        } finally {
+          // Ocultar el mensaje de carga
+          loadingMessage.classList.add("hidden");
+        }
+      }
+      
       async function deleteClinic(id) {
         // Obtener el elemento del mensaje de carga
         const loadingMessage = document.getElementById("loadingMessage");
@@ -559,7 +879,7 @@
           }
 
           // Recargar la tabla después de eliminar
-          loadTable();
+          loadclinicTable();
         } catch (error) {
           console.error("Error al eliminar la clínica:", error);
           alert("Hubo un error inesperado al eliminar la clínica.");
