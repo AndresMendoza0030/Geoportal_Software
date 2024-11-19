@@ -1,6 +1,5 @@
 package com.nikolas.leaflet.service;
 
-import com.nikolas.leaflet.domain.User;
 import com.nikolas.leaflet.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

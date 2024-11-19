@@ -107,8 +107,8 @@
                     <input
                       type="text"
                       id="clinicName"
+                      name="clinicName"
                       class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
-                      required
                     />
                   </div>
                   <div class="mb-4">
@@ -120,8 +120,8 @@
                     <input
                       type="text"
                       id="clinicAddress"
+                      name="clinicAddress"
                       class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
-                      required
                     />
                   </div>
                   <div class="mb-4">
@@ -133,8 +133,8 @@
                     <input
                       type="text"
                       id="municipality"
+                      name="municipality"
                       class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
-                      required
                     />
                   </div>
                   <div class="mb-4">
@@ -146,8 +146,8 @@
                     <input
                       type="time"
                       id="clinicStartWeekend"
+                      name="clinicStartWeekend"
                       class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
-                      required
                     />
                   </div>
                   <div class="mb-4">
@@ -159,8 +159,8 @@
                     <input
                       type="time"
                       id="clinicEndWeekend"
+                      name="clinicEndWeekend"
                       class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
-                      required
                     />
                   </div>
                 </div>
@@ -177,8 +177,8 @@
                       type="number"
                       step="any"
                       id="clinicXCoord"
+                      name="clinicXCoord"
                       class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
-                      required
                     />
                   </div>
                   <div class="mb-4">
@@ -191,8 +191,8 @@
                       type="number"
                       step="any"
                       id="clinicYCoord"
+                      name="clinicYCoord"
                       class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
-                      required
                     />
                   </div>
                   <div class="mb-4">
@@ -204,8 +204,8 @@
                     <input
                       type="text"
                       id="clinicZone"
+                      name="clinicZone"
                       class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
-                      required
                     />
                   </div>
                   <div class="mb-4">
@@ -217,8 +217,8 @@
                     <input
                       type="time"
                       id="clinicStartWeek"
+                      name="clinicStartWeek"
                       class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
-                      required
                     />
                   </div>
                   <div class="mb-4">
@@ -230,8 +230,8 @@
                     <input
                       type="time"
                       id="clinicEndWeek"
+                      name="clinicEndWeek"
                       class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
-                      required
                     />
                   </div>
                 </div>
@@ -343,9 +343,29 @@
 
       function toggleModal(modalId) {
         const modal = document.getElementById(modalId);
+
+        // Solo si el modal está abriendo
         if (!modal.classList.contains("hidden")) {
           clearInput();
+
+          const submitButton = document.querySelector(
+            'form button[type="submit"]'
+          );
+
+          // Restaurar el botón al estado inicial
+          submitButton.innerText = "Agregar Clinica Médica";
+
+          // Prevenir el envío accidental al restablecer el clic del submit
+          submitButton.onclick = (event) => {
+            event.preventDefault();
+            addClinic(event);
+          };
+
+          document.getElementById("title-modal").innerText =
+            "Agregar Nueva Clinica Médica";
         }
+
+        // Alternar la visibilidad del modal
         modal.classList.toggle("hidden");
       }
 
@@ -365,7 +385,9 @@
       async function addClinic(event) {
         event.preventDefault();
 
-        const button = event.target.querySelector("button[type='submit']");
+        const button = document.querySelector(
+          'form button[type="submit"]'
+        );
         button.disabled = true;
         button.textContent = "Agregando...";
 
@@ -381,6 +403,22 @@
           document.getElementById("clinicStartWeekend").value;
         const weekendEnd = document.getElementById("clinicEndWeekend").value;
         const municipality = document.getElementById("municipality").value;
+
+        if (
+          !clinicName ||
+          !clinicAddress ||
+          !municipality ||
+          !clinicStartWeekend ||
+          !clinicEndWeekend ||
+          !clinicXCoord ||
+          !clinicYCoord ||
+          !clinicZone ||
+          !clinicStartWeek ||
+          !clinicEndWeek
+        ) {
+          alert("Por favor, complete todos los campos.");
+          return;
+        }
 
         const data = {
           nombre: name,
@@ -414,6 +452,7 @@
 
           // Limpiar formulario y cerrar modal
           clearInput();
+
           toggleModal("addClinicModal");
 
           alert("Clínica agregada correctamente.");
@@ -530,7 +569,6 @@
           alert("Hubo un error al editar la clínica.");
         } finally {
           button.disabled = false;
-          button.textContent = "Guardar Cambios";
         }
       }
 

@@ -1,193 +1,313 @@
 <!DOCTYPE html>
 <html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Geoportal Admin</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://unpkg.com/tabulator-tables/dist/css/tabulator.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Geoportal Admin</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-  <link href="https://unpkg.com/tabulator-tables/dist/css/tabulator.min.css" rel="stylesheet" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
-</head>
+  <body class="font-sans">
+    <!-- Sidebar -->
+    <div class="flex flex-col md:flex-row h-screen">
+      <aside class="w-full md:w-64 bg-gray-800 p-6">
+        <div class="flex items-center mb-8">
+          <div class="text-blue-500 text-2xl font-semibold">Administrador</div>
+        </div>
+        <nav class="space-y-2">
+          <a
+            href="/admin/unidMedic"
+            class="flex items-center p-2 text-gray-300 bg-gray-700 rounded-md"
+          >
+            <span>Unidades Médicas</span>
+          </a>
+          <a
+            href="/admin/clinicMedic"
+            class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md"
+          >
+            <span>Clínicas Médicas</span>
+          </a>
+          <a
+            href="/logout"
+            class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md"
+          >
+            <span>Cerrar Sesión</span>
+          </a>
+        </nav>
+      </aside>
 
-<body class="font-sans">
-  <!-- Sidebar -->
-  <div class="flex flex-col md:flex-row h-screen">
-    <aside class="w-full md:w-64 bg-gray-800 p-6">
-      <div class="flex items-center mb-8">
-        <div class="text-blue-500 text-2xl font-semibold">Administrador</div>
-      </div>
-      <nav class="space-y-2">
-        <a href="/admin/unidMedic" class="flex items-center p-2 text-gray-300 bg-gray-700 rounded-md">
-          <span>Unidades Médicas</span>
-        </a>
-        <a href="/admin/clinicMedic" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md">
-          <span>Clínicas Médicas</span>
-        </a>
-        <a href="/logout" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md">
-          <span>Cerrar Sesión</span>
-        </a>
-      </nav>
-    </aside>
+      <!-- Main content -->
+      <div class="flex-1 p-6 w-full overflow-x-auto">
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-2xl font-semibold">Gestión de Unidades Médicas</h1>
+          <!-- Botón para agregar clínica -->
+          <button
+            onclick="toggleModal('addUnitModal')"
+            class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md"
+          >
+            Agregar Unidad Médica
+          </button>
+        </div>
 
-    <!-- Main content -->
-    <div class="flex-1 p-6 w-full overflow-x-auto">
-      <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-semibold">Gestión de Unidades Médicas</h1>
-        <!-- Botón para agregar clínica -->
-        <button onclick="toggleModal('addUnitModal')"
-          class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">
-          Agregar Unidad Médica
-        </button>
-      </div>
+        <div id="unitTable" class="mt-6"></div>
 
-      <div id="unitTable" class="mt-6"></div>
+        <div
+          id="loadingMessage"
+          class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white hidden"
+        >
+          <span class="">
+            <i class="fa-solid fa-spinner animate-spin text-4xl"></i>
+          </span>
+        </div>
 
-      <div id="loadingMessage"
-        class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white hidden">
-        <span class="">
-          <i class="fa-solid fa-spinner animate-spin text-4xl"></i>
-        </span>
-      </div>
-
-      <!-- Modal para agregar clínica -->
-      <div id="addUnitModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
-        <div class="bg-gray-900 max-w-full p-6 rounded-lg">
-          <form onsubmit="addUnit(event)">
-            <!-- Botón para cerrar -->
-            <button class="flex w-full items-center justify-end text-white" onclick="toggleModal('addUnitModal')">
-              <p class="pr-4 text-xl font-bold hover:opacity-75">
-                <i class="fa-solid fa-xmark text-2xl"></i>
-              </p>
-            </button>
-            <h2 id="title-modal" class="text-2xl font-semibold text-center text-white mb-6">
-              Agregar Unidad Médica
-            </h2>
-            <div class="max-w-lg mx-auto bg-gray-800 p-6 grid gap-6 grid-cols-2 rounded-lg">
-              <!-- Parte 1: Información General -->
-              <div class="">
-                <div class="mb-4">
-                  <label for="unitName" class="block text-sm mb-2 font-medium text-gray-300">Nombre de la
-                    Clínica</label>
-                  <input type="text" id="unitName" class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
-                    required />
-                </div>
-                <div class="mb-4">
-                  <label for="unitAddress" class="block text-sm font-medium mb-2 text-gray-300">Dirección</label>
-                  <input type="text" id="unitAddress" class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
-                    required />
-                </div>
-                <div class="mb-4">
-                  <label for="unitAddress" class="block text-sm font-medium mb-2 text-gray-300">Municipio</label>
-                  <input type="text" id="municipality" class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
-                    required />
-                </div>
-                <div class="mb-4">
-                  <label for="unitStartWeekend" class="block text-sm font-medium mb-2 text-gray-300">Horario Inicio
-                    Fin de Semana</label>
-                  <input type="time" id="unitStartWeekend" class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
-                    required />
-                </div>
-                <div class="mb-4">
-                  <label for="unitEndWeekend" class="block text-sm font-medium mb-2 text-gray-300">Horario Fin de Fin
-                    de Semana
-                  </label>
-                  <input type="time" id="unitEndWeekend" class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
-                    required />
-                </div>
-              </div>
-
-              <!-- Parte 2: Información Adicional -->
-              <div class="">
-                <div class="mb-4">
-                  <label for="unitXCoord" class="block mb-2 text-sm font-medium text-gray-300">Coordenada X</label>
-                  <input type="number" step="any" id="unitXCoord"
-                    class="w-full px-3 py-2 bg-gray-700 text-white rounded-md" required />
-                </div>
-                <div class="mb-4">
-                  <label for="unitYCoord" class="block text-sm mb-2 font-medium text-gray-300">Coordenada Y</label>
-                  <input type="number" step="any" id="unitYCoord"
-                    class="w-full px-3 py-2 bg-gray-700 text-white rounded-md" required />
-                </div>
-                <div class="mb-4">
-                  <label for="unitZone" class="block text-sm font-medium mb-2 text-gray-300">Zona</label>
-                  <input type="text" id="unitZone" class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
-                    required />
-                </div>
-                <div class="mb-4">
-                  <label for="unitStartWeek" class="block text-sm font-medium mb-2 text-gray-300">Horario Inicio de
-                    Semana</label>
-                  <input type="time" id="unitStartWeek" class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
-                    required />
-                </div>
-                <div class="mb-4">
-                  <label for="unitEndWeek" class="block text-sm font-medium mb-2 text-gray-300">Horario Fin de
-                    Semana</label>
-                  <input type="time" id="unitEndWeek" class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
-                    required />
-                </div>
-              </div>
-            </div>
-            <div class="text-center w-full mt-5 flex justify-center items-center">
-              <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                Agregar Unidad
+        <!-- Modal para agregar clínica -->
+        <div
+          id="addUnitModal"
+          class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center"
+        >
+          <div class="bg-gray-900 max-w-full p-6 rounded-lg">
+            <form onsubmit="addUnit(event)">
+              <!-- Botón para cerrar -->
+              <button
+                class="flex w-full items-center justify-end text-white"
+                onclick="toggleModal('addUnitModal')"
+              >
+                <p class="pr-4 text-xl font-bold hover:opacity-75">
+                  <i class="fa-solid fa-xmark text-2xl"></i>
+                </p>
               </button>
-            </div>
-          </form>
+              <h2
+                id="title-modal"
+                class="text-2xl font-semibold text-center text-white mb-6"
+              >
+                Agregar Unidad Médica
+              </h2>
+              <div
+                class="max-w-lg mx-auto bg-gray-800 p-6 grid gap-6 grid-cols-2 rounded-lg"
+              >
+                <!-- Parte 1: Información General -->
+                <div class="">
+                  <div class="mb-4">
+                    <label
+                      for="unitName"
+                      class="block text-sm mb-2 font-medium text-gray-300"
+                      >Nombre de la Clínica</label
+                    >
+                    <input
+                      type="text"
+                      id="unitName"
+                      class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
+                      required
+                    />
+                  </div>
+                  <div class="mb-4">
+                    <label
+                      for="unitAddress"
+                      class="block text-sm font-medium mb-2 text-gray-300"
+                      >Dirección</label
+                    >
+                    <input
+                      type="text"
+                      id="unitAddress"
+                      class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
+                      required
+                    />
+                  </div>
+                  <div class="mb-4">
+                    <label
+                      for="unitAddress"
+                      class="block text-sm font-medium mb-2 text-gray-300"
+                      >Municipio</label
+                    >
+                    <input
+                      type="text"
+                      id="municipality"
+                      class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
+                      required
+                    />
+                  </div>
+                  <div class="mb-4">
+                    <label
+                      for="unitStartWeekend"
+                      class="block text-sm font-medium mb-2 text-gray-300"
+                      >Horario Inicio Fin de Semana</label
+                    >
+                    <input
+                      type="time"
+                      id="unitStartWeekend"
+                      class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
+                      required
+                    />
+                  </div>
+                  <div class="mb-4">
+                    <label
+                      for="unitEndWeekend"
+                      class="block text-sm font-medium mb-2 text-gray-300"
+                      >Horario Fin de Fin de Semana
+                    </label>
+                    <input
+                      type="time"
+                      id="unitEndWeekend"
+                      class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <!-- Parte 2: Información Adicional -->
+                <div class="">
+                  <div class="mb-4">
+                    <label
+                      for="unitXCoord"
+                      class="block mb-2 text-sm font-medium text-gray-300"
+                      >Coordenada X</label
+                    >
+                    <input
+                      type="number"
+                      step="any"
+                      id="unitXCoord"
+                      class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
+                      required
+                    />
+                  </div>
+                  <div class="mb-4">
+                    <label
+                      for="unitYCoord"
+                      class="block text-sm mb-2 font-medium text-gray-300"
+                      >Coordenada Y</label
+                    >
+                    <input
+                      type="number"
+                      step="any"
+                      id="unitYCoord"
+                      class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
+                      required
+                    />
+                  </div>
+                  <div class="mb-4">
+                    <label
+                      for="unitZone"
+                      class="block text-sm font-medium mb-2 text-gray-300"
+                      >Zona</label
+                    >
+                    <input
+                      type="text"
+                      id="unitZone"
+                      class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
+                      required
+                    />
+                  </div>
+                  <div class="mb-4">
+                    <label
+                      for="unitStartWeek"
+                      class="block text-sm font-medium mb-2 text-gray-300"
+                      >Horario Inicio de Semana</label
+                    >
+                    <input
+                      type="time"
+                      id="unitStartWeek"
+                      class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
+                      required
+                    />
+                  </div>
+                  <div class="mb-4">
+                    <label
+                      for="unitEndWeek"
+                      class="block text-sm font-medium mb-2 text-gray-300"
+                      >Horario Fin de Semana</label
+                    >
+                    <input
+                      type="time"
+                      id="unitEndWeek"
+                      class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                class="text-center w-full mt-5 flex justify-center items-center"
+              >
+                <button
+                  type="submit"
+                  class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                >
+                  Agregar Unidad
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <script type="text/javascript" src="https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js"></script>
-  <script>
-    // Llama a la función cuando se cargue la página
-    document.addEventListener("DOMContentLoaded", loadTable);
+    <script
+      type="text/javascript"
+      src="https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js"
+    ></script>
+    <script>
+      // Llama a la función cuando se cargue la página
+      document.addEventListener("DOMContentLoaded", loadTable);
 
-    // Función para inicializar la tabla
-    async function loadTable() {
-      document.getElementById("loadingMessage").classList.remove("hidden");
-      try {
-        const response = await fetch("/unidadMedica/all");
-        const units = await response.json();
+      // Función para inicializar la tabla
+      async function loadTable() {
+        document.getElementById("loadingMessage").classList.remove("hidden");
+        try {
+          const response = await fetch("/unidadMedica/all");
+          const units = await response.json();
 
-        unitTable = new Tabulator("#unitTable", {
-          data: units,
-          layout: "fitData",
-          placeholder: "No hay datos disponibles",
-          scrollHorizontal: true,
-          height: "90%",
-          initialSort: [{ column: "id", dir: "desc" }],
-          columns: [
-            { title: "ID", field: "id", width: 50, sorter: "number" },
-            { title: "Nombre", field: "nombre" },
-            { title: "Dirección", field: "direccion" },
-            { title: "Coordenada X", field: "coorX" },
-            { title: "Coordenada Y", field: "coorY" },
-            { title: "Zona", field: "zona" },
-            { title: "Municipio", field: "municipio" },
-            {
-              title: "Horario de Semana",
-              field: "horarioSemana",
-              formatter: function (cell) {
-                const data = cell.getData();
-                return `${data.horarioInicioSemana || ""} - ${data.horarioFinSemana || ""}`;
+          unitTable = new Tabulator("#unitTable", {
+            data: units,
+            layout: "fitData",
+            placeholder: "No hay datos disponibles",
+            scrollHorizontal: true,
+            height: "90%",
+            initialSort: [{ column: "id", dir: "desc" }],
+            columns: [
+              { title: "ID", field: "id", width: 50, sorter: "number" },
+              { title: "Nombre", field: "nombre" },
+              { title: "Dirección", field: "direccion" },
+              { title: "Coordenada X", field: "coorX" },
+              { title: "Coordenada Y", field: "coorY" },
+              { title: "Zona", field: "zona" },
+              { title: "Municipio", field: "municipio" },
+              {
+                title: "Horario de Semana",
+                field: "horarioSemana",
+                formatter: function (cell) {
+                  const data = cell.getData();
+                  return `${data.horarioInicioSemana || ""} - ${
+                    data.horarioFinSemana || ""
+                  }`;
+                },
               },
-            },
-            {
-              title: "Horario Fin de Semana",
-              field: "horarioFinSemana",
-              formatter: function (cell) {
-                const data = cell.getData();
-                return `${data.horarioInicioFinde || ""} - ${data.horarioFinFinde || ""}`;
+              {
+                title: "Horario Fin de Semana",
+                field: "horarioFinSemana",
+                formatter: function (cell) {
+                  const data = cell.getData();
+                  return `${data.horarioInicioFinde || ""} - ${
+                    data.horarioFinFinde || ""
+                  }`;
+                },
               },
-            },
-            {
-              title: "Acciones",
-              field: "acciones",
-              width: 100,
-              formatter: function (cell) {
-                const data = cell.getRow().getData();
-                return `
+              {
+                title: "Acciones",
+                field: "acciones",
+                width: 100,
+                formatter: function (cell) {
+                  const data = cell.getRow().getData();
+                  return `
                         <div class="flex items-center justify-center w-full">
                             <button class="hover:opacity-75 mr-2" onclick="editUnit(
                                 '${data.id}',
@@ -209,241 +329,252 @@
                             </button>
                         </div>
                     `;
+                },
               },
-            }
-          ],
-        });
-      } catch (error) {
-        console.error("Error al cargar las Unidades Médicas:", error);
-      } finally {
-        document.getElementById("loadingMessage").classList.add("hidden");
+            ],
+          });
+        } catch (error) {
+          console.error("Error al cargar las Unidades Médicas:", error);
+        } finally {
+          document.getElementById("loadingMessage").classList.add("hidden");
+        }
       }
 
-    }
+      function toggleModal(modalId) {
+        const modal = document.getElementById(modalId);
 
-    function toggleModal(modalId) {
-      const modal = document.getElementById(modalId);
-      if (!modal.classList.contains("hidden")) {
-        clearInput();
-      }
-      modal.classList.toggle("hidden");
-    }
+        if (!modal.classList.contains("hidden")) {
+          clearInput();
 
-    function clearInput() {
-      document.getElementById("unitName").value = "";
-      document.getElementById("unitAddress").value = "";
-      document.getElementById("unitXCoord").value = "";
-      document.getElementById("unitYCoord").value = "";
-      document.getElementById("unitZone").value = "";
-      document.getElementById("unitStartWeek").value = "";
-      document.getElementById("unitEndWeek").value = "";
-      document.getElementById("unitStartWeekend").value = "";
-      document.getElementById("unitEndWeekend").value = "";
-      document.getElementById("municipality").value = "";
-    }
+          // Restaurar el texto y el evento del botón de envío
+          const submitButton = document.querySelector(
+            "form button[type='submit']"
+          );
+          submitButton.innerText = "Agregar Unidad Médica";
+          submitButton.onclick = (event) => addUnit(event);
 
-    async function addUnit(event) {
-      event.preventDefault();
-
-      const button = event.target.querySelector("button[type='submit']");
-      button.disabled = true;
-      button.textContent = "Agregando...";
-
-      // Obtener valores del formulario
-      const name = document.getElementById("unitName").value;
-      const address = document.getElementById("unitAddress").value;
-      const xCoordinate = document.getElementById("unitXCoord").value;
-      const yCoordinate = document.getElementById("unitYCoord").value;
-      const zone = document.getElementById("unitZone").value;
-      const weekStart = document.getElementById("unitStartWeek").value;
-      const weekEnd = document.getElementById("unitEndWeek").value;
-      const weekendStart = document.getElementById("unitStartWeekend").value;
-      const weekendEnd = document.getElementById("unitEndWeekend").value;
-      const municipality = document.getElementById("municipality").value;
-
-      const data = {
-        nombre: name,
-        direccion: address,
-        coorX: xCoordinate,
-        coorY: yCoordinate,
-        zona: zone,
-        horarioInicioSemana: weekStart,
-        horarioFinSemana: weekEnd,
-        municipio: municipality,
-        horarioInicioFinde: weekendStart,
-        horarioFinFinde: weekendEnd,
-      };
-      console.log(data);
-      try {
-        // Crear la tarjeta de la unidad médica
-        const response = await fetch("/unidadMedica/add", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        });
-
-        if (!response.ok) {
-          throw new Error("Error al agregar la unidad médica");
+          document.getElementById("title-modal").innerText =
+            "Agregar Nueva Unidad Médica";
         }
 
-        // Recargar la tabla
-        loadTable();
-
-        // Limpiar formulario y cerrar modal
-        clearInput();
-        toggleModal("addUnitModal");
-
-        alert("Unidad médica agregada correctamente.");
-      } catch (error) {
-        console.error("Error al agregar la unidad médica:", error);
-        alert("Hubo un error al agregar la unidad médica.");
-      } finally {
-        button.disabled = false;
-        button.textContent = "Agregar Unidad Médica";
+        modal.classList.toggle("hidden");
       }
-    }
 
-    function editUnit(
-      id,
-      name,
-      address,
-      xCoordinate,
-      yCoordinate,
-      zone,
-      weekStart,
-      weekEnd,
-      weekendStart,
-      weekendEnd,
-      municipality
-    ) {
-      document.getElementById("unitName").value = name;
-      document.getElementById("unitAddress").value = address;
-      document.getElementById("unitXCoord").value = xCoordinate;
-      document.getElementById("unitYCoord").value = yCoordinate;
-      document.getElementById("unitZone").value = zone;
-      document.getElementById("unitStartWeek").value = weekStart;
-      document.getElementById("unitEndWeek").value = weekEnd;
-      document.getElementById("unitStartWeekend").value = weekendStart;
-      document.getElementById("unitEndWeekend").value = weekendEnd;
-      document.getElementById("municipality").value = municipality;
+      function clearInput() {
+        document.getElementById("unitName").value = "";
+        document.getElementById("unitAddress").value = "";
+        document.getElementById("unitXCoord").value = "";
+        document.getElementById("unitYCoord").value = "";
+        document.getElementById("unitZone").value = "";
+        document.getElementById("unitStartWeek").value = "";
+        document.getElementById("unitEndWeek").value = "";
+        document.getElementById("unitStartWeekend").value = "";
+        document.getElementById("unitEndWeekend").value = "";
+        document.getElementById("municipality").value = "";
+      }
 
-      document.getElementById("title-modal").innerText =
-        "Editar Unidad Médica";
+      async function addUnit(event) {
+        event.preventDefault();
 
-      const submitButton = document.querySelector(
-        "form button[type='submit']"
-      );
-      submitButton.innerText = "Guardar Cambios";
+        const button = document.querySelector(
+          '#addUnitModal button[type="submit"]'
+        );
+        button.disabled = true;
+        button.textContent = "Agregando...";
 
-      submitButton.onclick = (event) => editModalUnit(event, id);
+        // Obtener valores del formulario
+        const name = document.getElementById("unitName").value;
+        const address = document.getElementById("unitAddress").value;
+        const xCoordinate = document.getElementById("unitXCoord").value;
+        const yCoordinate = document.getElementById("unitYCoord").value;
+        const zone = document.getElementById("unitZone").value;
+        const weekStart = document.getElementById("unitStartWeek").value;
+        const weekEnd = document.getElementById("unitEndWeek").value;
+        const weekendStart = document.getElementById("unitStartWeekend").value;
+        const weekendEnd = document.getElementById("unitEndWeekend").value;
+        const municipality = document.getElementById("municipality").value;
 
-      // Abrir el modal para editar
-      toggleModal("addUnitModal");
-    }
+        const data = {
+          nombre: name,
+          direccion: address,
+          coorX: xCoordinate,
+          coorY: yCoordinate,
+          zona: zone,
+          horarioInicioSemana: weekStart,
+          horarioFinSemana: weekEnd,
+          municipio: municipality,
+          horarioInicioFinde: weekendStart,
+          horarioFinFinde: weekendEnd,
+        };
 
-    async function editModalUnit(event, unitId) {
-      event.preventDefault();
+        try {
+          // Crear la tarjeta de la unidad médica
+          const response = await fetch("/unidadMedica/add", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
 
-      const button = document.querySelector("form button[type='submit']");
+          if (!response.ok) {
+            throw new Error("Error al agregar la unidad médica");
+          }
 
-      button.disabled = true;
-      button.textContent = "Actualizando...";
+          // Recargar la tabla
+          loadTable();
 
-      // Obtener valores del formulario
-      const name = document.getElementById("unitName").value;
-      const address = document.getElementById("unitAddress").value;
-      const xCoordinate = document.getElementById("unitXCoord").value;
-      const yCoordinate = document.getElementById("unitYCoord").value;
-      const zone = document.getElementById("unitZone").value;
-      const weekStart = document.getElementById("unitStartWeek").value;
-      const weekEnd = document.getElementById("unitEndWeek").value;
-      const weekendStart = document.getElementById("unitStartWeekend").value;
-      const weekendEnd = document.getElementById("unitEndWeekend").value;
-      const municipality = document.getElementById("municipality").value;
+          // Limpiar formulario y cerrar modal
+          clearInput();
+          toggleModal("addUnitModal");
 
-      const data = {
-        nombre: name,
-        direccion: address,
-        coorX: xCoordinate,
-        coorY: yCoordinate,
-        zona: zone,
-        horarioInicioSemana: weekStart,
-        horarioFinSemana: weekEnd,
-        municipio: municipality,
-        horarioInicioFinde: weekendStart,
-        horarioFinFinde: weekendEnd,
-      };
-
-      try {
-        // Mostrar el mensaje de carga
-        loadingMessage.classList.remove("hidden");
-
-        // Enviar solicitud PUT al endpoint correcto con el ID de la unidad médica
-        const response = await fetch(`/unidadMedica/update/${unitId}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        });
-
-        if (!response.ok) {
-          throw new Error("Error al editar la unidad médica");
+          alert("Unidad médica agregada correctamente.");
+        } catch (error) {
+          console.error("Error al agregar la unidad médica:", error);
+          alert("Hubo un error al agregar la unidad médica.");
+        } finally {
+          button.disabled = false;
+          button.textContent = "Agregar Unidad Médica";
         }
+      }
 
-        // Recargar la tabla
-        loadTable();
+      function editUnit(
+        id,
+        name,
+        address,
+        xCoordinate,
+        yCoordinate,
+        zone,
+        weekStart,
+        weekEnd,
+        weekendStart,
+        weekendEnd,
+        municipality
+      ) {
+        document.getElementById("unitName").value = name;
+        document.getElementById("unitAddress").value = address;
+        document.getElementById("unitXCoord").value = xCoordinate;
+        document.getElementById("unitYCoord").value = yCoordinate;
+        document.getElementById("unitZone").value = zone;
+        document.getElementById("unitStartWeek").value = weekStart;
+        document.getElementById("unitEndWeek").value = weekEnd;
+        document.getElementById("unitStartWeekend").value = weekendStart;
+        document.getElementById("unitEndWeekend").value = weekendEnd;
+        document.getElementById("municipality").value = municipality;
 
-        // Limpiar formulario y cerrar modal
-        clearInput();
+        document.getElementById("title-modal").innerText =
+          "Editar Unidad Médica";
+
+        const submitButton = document.querySelector(
+          "form button[type='submit']"
+        );
+        submitButton.innerText = "Guardar Cambios";
+
+        submitButton.onclick = (event) => editModalUnit(event, id);
+
+        // Abrir el modal para editar
         toggleModal("addUnitModal");
-
-        alert("Unidad médica editada correctamente.");
-      } catch (error) {
-        console.error("Error al editar la unidad médica:", error);
-        alert("Hubo un error al editar la unidad médica.");
-      } finally {
-        button.disabled = false;
-        button.textContent = "Guardar Cambios";
       }
-    }
 
-    async function deleteUnit(id) {
-      // Obtener el elemento del mensaje de carga
-      const loadingMessage = document.getElementById("loadingMessage");
+      async function editModalUnit(event, unitId) {
+        event.preventDefault();
 
-      // Confirmar eliminación
-      if (!confirm("¿Estás seguro de eliminar esta unidad médica?")) {
-        return;
+        const button = document.querySelector("form button[type='submit']");
+
+        button.disabled = true;
+        button.textContent = "Actualizando...";
+
+        // Obtener valores del formulario
+        const name = document.getElementById("unitName").value;
+        const address = document.getElementById("unitAddress").value;
+        const xCoordinate = document.getElementById("unitXCoord").value;
+        const yCoordinate = document.getElementById("unitYCoord").value;
+        const zone = document.getElementById("unitZone").value;
+        const weekStart = document.getElementById("unitStartWeek").value;
+        const weekEnd = document.getElementById("unitEndWeek").value;
+        const weekendStart = document.getElementById("unitStartWeekend").value;
+        const weekendEnd = document.getElementById("unitEndWeekend").value;
+        const municipality = document.getElementById("municipality").value;
+
+        const data = {
+          nombre: name,
+          direccion: address,
+          coorX: xCoordinate,
+          coorY: yCoordinate,
+          zona: zone,
+          horarioInicioSemana: weekStart,
+          horarioFinSemana: weekEnd,
+          municipio: municipality,
+          horarioInicioFinde: weekendStart,
+          horarioFinFinde: weekendEnd,
+        };
+
+        try {
+          // Mostrar el mensaje de carga
+          loadingMessage.classList.remove("hidden");
+
+          // Enviar solicitud PUT al endpoint correcto con el ID de la unidad médica
+          const response = await fetch(`/unidadMedica/update/${unitId}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+
+          if (!response.ok) {
+            throw new Error("Error al editar la unidad médica");
+          }
+
+          // Recargar la tabla
+          loadTable();
+
+          // Limpiar formulario y cerrar modal
+          clearInput();
+          toggleModal("addUnitModal");
+
+          alert("Unidad médica editada correctamente.");
+        } catch (error) {
+          console.error("Error al editar la unidad médica:", error);
+          alert("Hubo un error al editar la unidad médica.");
+        } finally {
+          button.disabled = false;
+        }
       }
-      try {
-        // Mostrar el mensaje de carga
-        loadingMessage.classList.remove("hidden");
 
-        // Hacer la solicitud de eliminación
-        const response = await fetch(`/unidadMedica/delete/${id}`, {
-          method: "DELETE",
-        });
+      async function deleteUnit(id) {
+        // Obtener el elemento del mensaje de carga
+        const loadingMessage = document.getElementById("loadingMessage");
 
-        if (!response.ok) {
-          console.error("Error al eliminar la unidad médica");
-          alert("Hubo un error al eliminar la unidad médica.");
+        // Confirmar eliminación
+        if (!confirm("¿Estás seguro de eliminar esta unidad médica?")) {
           return;
         }
+        try {
+          // Mostrar el mensaje de carga
+          loadingMessage.classList.remove("hidden");
 
-        // Recargar la tabla después de eliminar
-        loadTable();
-      } catch (error) {
-        console.error("Error al eliminar la unidad médica:", error);
-        alert("Hubo un error inesperado al eliminar la unidad médica.");
-      } finally {
-        // Ocultar el mensaje de carga
-        loadingMessage.classList.add("hidden");
+          // Hacer la solicitud de eliminación
+          const response = await fetch(`/unidadMedica/delete/${id}`, {
+            method: "DELETE",
+          });
+
+          if (!response.ok) {
+            console.error("Error al eliminar la unidad médica");
+            alert("Hubo un error al eliminar la unidad médica.");
+            return;
+          }
+
+          // Recargar la tabla después de eliminar
+          loadTable();
+        } catch (error) {
+          console.error("Error al eliminar la unidad médica:", error);
+          alert("Hubo un error inesperado al eliminar la unidad médica.");
+        } finally {
+          // Ocultar el mensaje de carga
+          loadingMessage.classList.add("hidden");
+        }
       }
-    }
-  </script>
-</body>
-
+    </script>
+  </body>
 </html>

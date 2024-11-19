@@ -1,6 +1,5 @@
 package com.nikolas.leaflet.repository;
 
-import com.nikolas.leaflet.domain.ClinicaComunal;
 import com.nikolas.leaflet.domain.UnidadMedica;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

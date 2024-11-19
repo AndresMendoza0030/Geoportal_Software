@@ -2,7 +2,6 @@ package com.nikolas.leaflet.domain;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.sql.Time;
 
 @Entity
 @Table(name = "unidades_medicas")

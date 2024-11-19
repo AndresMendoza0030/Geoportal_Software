@@ -20,17 +20,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.slf4j.Marker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,7 +33,6 @@ import org.springframework.web.servlet.ModelAndView;
 import com.nikolas.leaflet.domain.LeafletMap;
 import com.nikolas.leaflet.service.LeafletMapService;
 import com.nikolas.leaflet.util.GenericResponse;
-import com.nikolas.leaflet.dto.BusquedaDTO;
 
 @Controller
 @RequestMapping("/map")
@@ -116,12 +108,12 @@ public class LeafletMapController {
             myModel.put("map", leafletMap);
 
             // Obtener todas las unidades médicas para el mapa
-            List<UnidadMedica> todasUnidades = UnidadMedicaService.unidadMedicaGetAll();
+            List<UnidadMedica> todasUnidades = UnidadMedicaService.getAllEntidadesMedicas();
             System.out.println("Total de unidades médicas para el mapa: " + todasUnidades.size());
 
             // Obtener unidades médicas paginadas para la tabla
             Pageable pageable = PageRequest.of(page, size);
-            Page<UnidadMedica> centrosPage = UnidadMedicaService.unidadMedicaGetAll(pageable);
+            Page<UnidadMedica> centrosPage = UnidadMedicaService.getAllEntidadesMedicas(pageable);
             System.out.println("Total de unidades médicas paginadas: " + centrosPage.getTotalElements());
 
             // Obtener lista de municipios

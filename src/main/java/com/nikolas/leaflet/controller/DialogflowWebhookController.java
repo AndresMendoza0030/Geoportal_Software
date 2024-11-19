@@ -1,6 +1,5 @@
 package com.nikolas.leaflet.controller;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
 import com.nikolas.leaflet.domain.ClinicaComunal;
@@ -68,8 +67,7 @@ public class DialogflowWebhookController {
                 Map<String, String> location = locationList.get(0);
                 
                 String municipio = extractLocation(location);
-
-                List<UnidadMedica> unidadesMedicas = UnidadMedicaService.findByNombreContaining(municipio);
+                List<UnidadMedica> unidadesMedicas = UnidadMedicaService.buscarPorMunicipio(municipio);
                 JsonObject responseJson = createFulfillmentMessageJson4(municipio, unidadesMedicas);
                 return ResponseEntity.ok().body(responseJson);
             }
