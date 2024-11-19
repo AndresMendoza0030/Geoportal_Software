@@ -26,14 +26,14 @@ private static final Logger logger = LoggerFactory.getLogger(UserService.class);
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeRequests()
-            .antMatchers("/","/update","/index", "/map/index", "/register", "/map/unidades", "/css/**", "/js/**", "/images/**", "/webjars/**")
+            .antMatchers("/","/update","/index", "/map/index", "/register", "/map/unidades", "/map/informacion", "/css/**", "/js/**", "/images/**", "/webjars/**")
                 .permitAll()  // Permite acceso a estas rutas sin autenticación
                 .anyRequest().authenticated()  // Requiere autenticación para el resto
             .and()
             .formLogin()
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/admin/geo-admin", true)
+                .defaultSuccessUrl("/admin/clinicMedic", true)
                 .failureUrl("/login?error=true")
                 .permitAll()
             .and()

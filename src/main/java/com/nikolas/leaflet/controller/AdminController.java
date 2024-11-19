@@ -11,9 +11,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class AdminController {
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
-    @GetMapping("/geo-admin")
+    @GetMapping("/clinicMedic")
     public String geoAdmin() {
-        return "admin/geo-admin";
+        return "admin/clinicMedic";
+    }
+
+    @GetMapping("/unidMedic")
+    public String clinicas() {
+        return "admin/unidMedic";
     }
 
 }
