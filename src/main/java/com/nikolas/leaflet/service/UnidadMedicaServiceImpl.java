@@ -80,4 +80,40 @@ public class UnidadMedicaServiceImpl implements UnidadMedicaService {
     public List<String> getDistinctMunicipios() {
         return UnidadMedicaRepository.findDistinctMunicipios();
     }
+
+    @Override
+    public UnidadMedica addUnidadMedica(UnidadMedica UnidadMedica) {
+        return UnidadMedicaRepository.save(UnidadMedica);
+    }
+
+    @Override
+    public void deleteUnidadMedica(Integer id) {
+        UnidadMedicaRepository.deleteById(id);
+    }
+
+    @Override
+    public UnidadMedica updateUnidadMedica(Integer id, UnidadMedica UnidadMedica) {
+        Optional<UnidadMedica> existingUnidadMedicaOpt = UnidadMedicaRepository.findById(id);
+        if (existingUnidadMedicaOpt.isPresent()) {
+            UnidadMedica existingUnidadMedica = existingUnidadMedicaOpt.get();
+            existingUnidadMedica.setNombre(UnidadMedica.getNombre());
+            existingUnidadMedica.setDireccion(UnidadMedica.getDireccion());
+            existingUnidadMedica.setMunicipio(UnidadMedica.getMunicipio());
+            existingUnidadMedica.setZona(UnidadMedica.getZona());
+            existingUnidadMedica.setCoorX(UnidadMedica.getCoorX());
+            existingUnidadMedica.setCoorY(UnidadMedica.getCoorY());
+            existingUnidadMedica.setHorarioInicioSemana(UnidadMedica.getHorarioInicioSemana());
+            existingUnidadMedica.setHorarioFinSemana(UnidadMedica.getHorarioFinSemana());
+            existingUnidadMedica.setHorarioInicioFinde(UnidadMedica.getHorarioInicioFinde());
+            existingUnidadMedica.setHorarioFinFinde(UnidadMedica.getHorarioFinFinde());
+            return UnidadMedicaRepository.save(existingUnidadMedica);
+        } else {
+            throw new RuntimeException("UnidadMedica no encontrada con ID " + id);
+        }
+    }
+
+    @Override
+    public List<String> getDistinctMunicipios() {
+        return UnidadMedicaRepository.findDistinctMunicipios();
+    }
 }
