@@ -77,16 +77,16 @@
           class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center"
         >
           <div class="bg-gray-900 max-w-full p-6 rounded-lg">
+            <!-- Botón para cerrar -->
+            <button
+              class="flex w-full items-center justify-end text-white"
+              onclick="toggleModal('addClinicModal')"
+            >
+              <p class="pr-4 text-xl font-bold hover:opacity-75">
+                <i class="fa-solid fa-xmark text-2xl"></i>
+              </p>
+            </button>
             <form onsubmit="addClinic(event)">
-              <!-- Botón para cerrar -->
-              <button
-                class="flex w-full items-center justify-end text-white"
-                onclick="toggleModal('addClinicModal')"
-              >
-                <p class="pr-4 text-xl font-bold hover:opacity-75">
-                  <i class="fa-solid fa-xmark text-2xl"></i>
-                </p>
-              </button>
               <h2
                 id="title-modal"
                 class="text-2xl font-semibold text-center text-white mb-6"
@@ -109,6 +109,7 @@
                       id="clinicName"
                       name="clinicName"
                       class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
+                      required
                     />
                   </div>
                   <div class="mb-4">
@@ -122,6 +123,7 @@
                       id="clinicAddress"
                       name="clinicAddress"
                       class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
+                      required
                     />
                   </div>
                   <div class="mb-4">
@@ -135,6 +137,7 @@
                       id="municipality"
                       name="municipality"
                       class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
+                      required
                     />
                   </div>
                   <div class="mb-4">
@@ -148,6 +151,7 @@
                       id="clinicStartWeekend"
                       name="clinicStartWeekend"
                       class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
+                      required
                     />
                   </div>
                   <div class="mb-4">
@@ -161,6 +165,7 @@
                       id="clinicEndWeekend"
                       name="clinicEndWeekend"
                       class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
+                      required
                     />
                   </div>
                 </div>
@@ -179,6 +184,7 @@
                       id="clinicXCoord"
                       name="clinicXCoord"
                       class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
+                      required
                     />
                   </div>
                   <div class="mb-4">
@@ -193,6 +199,7 @@
                       id="clinicYCoord"
                       name="clinicYCoord"
                       class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
+                      required
                     />
                   </div>
                   <div class="mb-4">
@@ -206,6 +213,7 @@
                       id="clinicZone"
                       name="clinicZone"
                       class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
+                      required
                     />
                   </div>
                   <div class="mb-4">
@@ -219,6 +227,7 @@
                       id="clinicStartWeek"
                       name="clinicStartWeek"
                       class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
+                      required
                     />
                   </div>
                   <div class="mb-4">
@@ -232,6 +241,7 @@
                       id="clinicEndWeek"
                       name="clinicEndWeek"
                       class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
+                      required
                     />
                   </div>
                 </div>
@@ -385,12 +395,6 @@
       async function addClinic(event) {
         event.preventDefault();
 
-        const button = document.querySelector(
-          'form button[type="submit"]'
-        );
-        button.disabled = true;
-        button.textContent = "Agregando...";
-
         // Obtener valores del formulario
         const name = document.getElementById("clinicName").value;
         const address = document.getElementById("clinicAddress").value;
@@ -419,6 +423,10 @@
           alert("Por favor, complete todos los campos.");
           return;
         }
+
+        const button = document.querySelector('form button[type="submit"]');
+        button.disabled = true;
+        button.textContent = "Agregando...";
 
         const data = {
           nombre: name,

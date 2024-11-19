@@ -77,16 +77,16 @@
           class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center"
         >
           <div class="bg-gray-900 max-w-full p-6 rounded-lg">
+            <!-- Botón para cerrar -->
+            <button
+              class="flex w-full items-center justify-end text-white"
+              onclick="toggleModal('addUnitModal')"
+            >
+              <p class="pr-4 text-xl font-bold hover:opacity-75">
+                <i class="fa-solid fa-xmark text-2xl"></i>
+              </p>
+            </button>
             <form onsubmit="addUnit(event)">
-              <!-- Botón para cerrar -->
-              <button
-                class="flex w-full items-center justify-end text-white"
-                onclick="toggleModal('addUnitModal')"
-              >
-                <p class="pr-4 text-xl font-bold hover:opacity-75">
-                  <i class="fa-solid fa-xmark text-2xl"></i>
-                </p>
-              </button>
               <h2
                 id="title-modal"
                 class="text-2xl font-semibold text-center text-white mb-6"
@@ -107,6 +107,7 @@
                     <input
                       type="text"
                       id="unitName"
+                      name="unitName"
                       class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
                       required
                     />
@@ -120,6 +121,7 @@
                     <input
                       type="text"
                       id="unitAddress"
+                      name="unitAddress"
                       class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
                       required
                     />
@@ -133,6 +135,7 @@
                     <input
                       type="text"
                       id="municipality"
+                      name="municipality"
                       class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
                       required
                     />
@@ -146,6 +149,7 @@
                     <input
                       type="time"
                       id="unitStartWeekend"
+                      name="unitStartWeekend"
                       class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
                       required
                     />
@@ -159,6 +163,7 @@
                     <input
                       type="time"
                       id="unitEndWeekend"
+                      name="unitEndWeekend"
                       class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
                       required
                     />
@@ -177,6 +182,7 @@
                       type="number"
                       step="any"
                       id="unitXCoord"
+                      name="unitXCoord"
                       class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
                       required
                     />
@@ -191,6 +197,7 @@
                       type="number"
                       step="any"
                       id="unitYCoord"
+                      name="unitYCoord"
                       class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
                       required
                     />
@@ -204,6 +211,7 @@
                     <input
                       type="text"
                       id="unitZone"
+                      name="unitZone"
                       class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
                       required
                     />
@@ -217,6 +225,7 @@
                     <input
                       type="time"
                       id="unitStartWeek"
+                      name="unitStartWeek"
                       class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
                       required
                     />
@@ -230,6 +239,7 @@
                     <input
                       type="time"
                       id="unitEndWeek"
+                      name="unitEndWeek"
                       class="w-full px-3 py-2 bg-gray-700 text-white rounded-md"
                       required
                     />
@@ -376,12 +386,6 @@
       async function addUnit(event) {
         event.preventDefault();
 
-        const button = document.querySelector(
-          '#addUnitModal button[type="submit"]'
-        );
-        button.disabled = true;
-        button.textContent = "Agregando...";
-
         // Obtener valores del formulario
         const name = document.getElementById("unitName").value;
         const address = document.getElementById("unitAddress").value;
@@ -393,6 +397,28 @@
         const weekendStart = document.getElementById("unitStartWeekend").value;
         const weekendEnd = document.getElementById("unitEndWeekend").value;
         const municipality = document.getElementById("municipality").value;
+
+        if (
+          !name ||
+          !address ||
+          !municipality ||
+          !weekendStart ||
+          !weekendEnd ||
+          !xCoordinate ||
+          !yCoordinate ||
+          !zone ||
+          !weekStart ||
+          !weekEnd
+        ) {
+          alert("Por favor, complete todos los campos.");
+          return;
+        }
+
+        const button = document.querySelector(
+          '#addUnitModal button[type="submit"]'
+        );
+        button.disabled = true;
+        button.textContent = "Agregando...";
 
         const data = {
           nombre: name,
