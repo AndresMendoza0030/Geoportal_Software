@@ -29,4 +29,3 @@ public interface UnidadMedicaService extends Serializable {
 
     UnidadMedica updateUnidadMedica(Integer id, UnidadMedica UnidadMedica);
 }
-
