@@ -30,10 +30,10 @@
 </head>
 <body class="h-full flex items-center justify-center bg-gradient-to-br from-blue-400 to-cyan-700 p-4">
     
-    <div class="absolute top-3 left-3">
-        <button type="button" id="backButton" class="px-6 py-2 border text-white rounded-lg ">
-            Regresar
-        </button>
+    <div class="absolute top-4 left-4">
+        <a href="/map/index" class="flex items-center text-white bg-blue-500 hover:bg-blue-600 p-2 rounded-full shadow-lg">
+            <i data-lucide="arrow-left" class="w-6 h-6"></i>
+        </a>
     </div>
     <div class="max-w-md w-full space-y-8 bg-white bg-opacity-90 backdrop-filter backdrop-blur-lg p-10 rounded-2xl shadow-2xl animate-fadeIn">
         <div class="text-center">
@@ -77,9 +77,6 @@
    
     <script>
         lucide.createIcons();
-        document.getElementById("backButton").onclick = function () {
-            window.location.href = "/map/index";
-        };
     </script>
     
 </body>
