@@ -293,11 +293,7 @@
           const table = new Tabulator("#clinicTable", {
             data: clinic,
             layout: "fitColumns",
-            responsiveLayout: "collapse",
-            placeholder: "No hay datos disponibles",
-            height: "450px",
-            width: "100%", // Añade esta línea
-            initialSort: [{ column: "id", dir: "desc" }],
+          responsiveLayout: "hide",
             columns: [
               { title: "ID", field: "id", width: 60, sorter: "number", headerSort: true },
               { title: "Nombre", field: "nombre", widthGrow: 2},
@@ -614,7 +610,7 @@
             <p><strong>Zona:</strong> ${data.zona}</p>
             <p><strong>Horario de Semana:</strong> ${data.horarioInicioSemana} - ${data.horarioFinSemana}</p>
             <p><strong>Horario de Fin de Semana:</strong> ${data.horarioInicioFinde} - ${data.horarioFinFinde}</p>
-            <button class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="this.closest('.fixed').remove()">
+            <button class="mt-4 w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="this.closest('.fixed').remove()">
               Cerrar
             </button>
           </div>

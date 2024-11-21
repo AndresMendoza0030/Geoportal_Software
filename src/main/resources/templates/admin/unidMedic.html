@@ -6,13 +6,67 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Geoportal Admin</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-  <link href="https://unpkg.com/tabulator-tables/dist/css/tabulator.min.css" rel="stylesheet" />
+  <link href="https://unpkg.com/tabulator-tables@5.4.4/dist/css/tabulator.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
   <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-<!-- SweetAlert2 CDN -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+  /* Custom styles for Tabulator */
+  .tabulator {
+        font-family: 'Arial', sans-serif;
+        border: none;
+        background-color: #ffffff;
+        color: #333333;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      .tabulator .tabulator-header {
+        background-color: #f3f4f6;
+        border-bottom: 2px solid #e5e7eb;
+        color: #1f2937;
+        font-weight: bold;
+      }
+      .tabulator .tabulator-header .tabulator-col {
+        background-color: #f3f4f6;
+        border-right: none;
+      }
+      .tabulator .tabulator-header .tabulator-col-content {
+        padding: 12px 15px;
+      }
+      .tabulator .tabulator-row {
+        border-bottom: 1px solid #e5e7eb;
+      }
+      .tabulator .tabulator-row .tabulator-cell {
+        border-right: none;
+        padding: 12px 15px;
+      }
+      .tabulator .tabulator-row:nth-child(even) {
+        background-color: #f9fafb;
+      }
+      .tabulator .tabulator-row:hover {
+        background-color: #e5e7eb;
+      }
+    /* Action buttons styling */
+    .action-btn-view {
+      color: #10B981;
+    }
+    
+    .action-btn-edit {
+      color: #3B82F6;
+    }
+    
+    .action-btn-delete {
+      color: #EF4444;
+    }
+    
+    .action-btn-view:hover,
+    .action-btn-edit:hover,
+    .action-btn-delete:hover {
+      opacity: 0.8;
+    }
+  </style>
 </head>
 
 <body class="font-sans">
@@ -27,7 +81,7 @@
           <span>Unidades Médicas</span>
         </a>
         <a href="/admin/clinicMedic" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md">
-          <span>Unidads Médicas</span>
+          <span>Clínicas Médicas</span>
         </a>
         <a href="/logout" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md">
           <span>Cerrar Sesión</span>
@@ -141,9 +195,55 @@
           </form>
         </div>
       </div>
+
+      <!-- Modal para ver detalles de la Unidad -->
+      <div id="viewUnitModal" class="hidden fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex justify-center items-center p-4">
+        <div class="bg-white w-full max-w-md rounded-lg p-6">
+          <h2 id="view-unit-name" class="text-2xl font-bold mb-6"></h2>
+          
+          <div class="space-y-4">
+            <div>
+              <p class="font-semibold">Dirección:</p>
+              <p id="view-unit-address"></p>
+            </div>
+            
+            <div>
+              <p class="font-semibold">Municipio:</p>
+              <p id="view-unit-municipality"></p>
+            </div>
+            
+            <div>
+              <p class="font-semibold">Coordenadas:</p>
+              <p id="view-unit-coordinates"></p>
+            </div>
+            
+            <div>
+              <p class="font-semibold">Zona:</p>
+              <p id="view-unit-zone"></p>
+            </div>
+            
+            <div>
+              <p class="font-semibold">Horario de Semana:</p>
+              <p id="view-unit-week-schedule"></p>
+            </div>
+            
+            <div>
+              <p class="font-semibold">Horario de Fin de Semana:</p>
+              <p id="view-unit-weekend-schedule"></p>
+            </div>
+          </div>
+          
+          <button 
+            onclick="toggleModal('viewUnitModal')"
+            class="mt-6 w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md transition-colors"
+          >
+            Cerrar
+          </button>
+        </div>
+      </div>
     </div>
   </div>
-  <script type="text/javascript" src="https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js"></script>
+  <script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.4.4/dist/js/tabulator.min.js"></script>
   <script>
     // Llama a la función cuando se cargue la página
     document.addEventListener("DOMContentLoaded", loadTable);
@@ -157,66 +257,53 @@
 
         unitTable = new Tabulator("#unitTable", {
           data: units,
-          layout: "fitData",
-          placeholder: "No hay datos disponibles",
-          scrollHorizontal: true,
-          height: "90%",
-          initialSort: [{ column: "id", dir: "desc" }],
+          layout: "fitColumns",
+          responsiveLayout: "hide",
           columns: [
-            { title: "ID", field: "id", width: 50, sorter: "number" },
-            { title: "Nombre", field: "nombre" },
-            { title: "Dirección", field: "direccion" },
-            { title: "Coordenada X", field: "coorX" },
-            { title: "Coordenada Y", field: "coorY" },
-            { title: "Zona", field: "zona" },
-            { title: "Municipio", field: "municipio" },
+            { title: "ID", field: "id", sorter: "number", width: 70 },
+            { title: "Nombre", field: "nombre", sorter: "string" },
+            { title: "Dirección", field: "direccion", sorter: "string" },
+            { title: "Coordenada X", field: "coorX", sorter: "number" },
+            { title: "Coordenada Y", field: "coorY", sorter: "number" },
+            { title: "Zona", field: "zona", sorter: "string" },
+            { title: "M...", field: "municipio", sorter: "string", width: 80 },
             {
               title: "Horario de Semana",
               field: "horarioSemana",
-              formatter: function (cell) {
+              formatter: function(cell) {
                 const data = cell.getData();
-                return `${data.horarioInicioSemana || ""} - ${data.horarioFinSemana || ""
-                  }`;
-              },
+                return `Inicio: ${data.horarioInicioSemana}<br>Fin: ${data.horarioFinSemana}`;
+              }
             },
             {
               title: "Horario Fin de Semana",
               field: "horarioFinSemana",
-              formatter: function (cell) {
+              formatter: function(cell) {
                 const data = cell.getData();
-                return `${data.horarioInicioFinde || ""} - ${data.horarioFinFinde || ""
-                  }`;
-              },
+                return `Inicio: ${data.horarioInicioFinde}<br>Fin: ${data.horarioFinFinde}`;
+              }
             },
             {
               title: "Acciones",
-              field: "acciones",
-              width: 100,
-              formatter: function (cell) {
+              formatter: function(cell) {
                 const data = cell.getRow().getData();
                 return `
-                        <div class="flex items-center justify-center w-full">
-                            <button class="hover:opacity-75 mr-2" onclick="editUnit(
-                                '${data.id}',
-                                '${data.nombre}',
-                                '${data.direccion}',
-                                '${data.coorX}',
-                                '${data.coorY}',
-                                '${data.zona}',
-                                '${data.horarioInicioSemana}',
-                                '${data.horarioFinSemana}',
-                                '${data.horarioInicioFinde}',
-                                '${data.horarioFinFinde}',
-                                '${data.municipio}'
-                            )">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </button>
-                            <button class="text-red-500 hover:text-red-700" onclick="deleteUnit('${data.id}')">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </div>
-                    `;
+                  <div class="flex space-x-3 justify-center">
+                    <button class="action-btn-view" title="Ver" onclick="viewUnit(${JSON.stringify(data).replace(/"/g, '&quot;')})">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="action-btn-edit" title="Editar" onclick="editUnit('${data.id}', '${data.nombre}', '${data.direccion}', '${data.coorX}', '${data.coorY}', '${data.zona}', '${data.horarioInicioSemana}', '${data.horarioFinSemana}', '${data.horarioInicioFinde}', '${data.horarioFinFinde}', '${data.municipio}')">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="action-btn-delete" title="Eliminar" onclick="deleteUnit('${data.id}')">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                `;
               },
+              width: 120,
+              hozAlign: "center",
+              headerSort: false
             },
           ],
         });
@@ -484,20 +571,20 @@
       const loadingMessage = document.getElementById("loadingMessage");
 
        // Mostrar SweetAlert2 para confirmar la eliminación
-    const { isConfirmed } = await Swal.fire({
-        title: '¿Estás seguro?',
-        text: "Una vez eliminada, no se podrá recuperar la unidad.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar'
-    });
+      const { isConfirmed } = await Swal.fire({
+          title: '¿Estás seguro?',
+          text: "Una vez eliminada, no se podrá recuperar la unidad.",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Sí, eliminar',
+          cancelButtonText: 'Cancelar'
+      });
 
-    if (!isConfirmed) {
-        return;
-    }
+      if (!isConfirmed) {
+          return;
+      }
 
       try {
         // Mostrar el mensaje de carga
@@ -544,6 +631,35 @@
         // Ocultar el mensaje de carga
         loadingMessage.classList.add("hidden");
       }
+    }
+
+    function viewUnit(unitData) {
+      // Set the unit name as title
+      document.getElementById("view-unit-name").textContent = unitData.nombre;
+      
+      // Set the address
+      document.getElementById("view-unit-address").textContent = unitData.direccion;
+      
+      // Set the municipality
+      document.getElementById("view-unit-municipality").textContent = unitData.municipio;
+      
+      // Set the coordinates
+      document.getElementById("view-unit-coordinates").textContent = 
+        `X: ${unitData.coorX}, Y: ${unitData.coorY}`;
+      
+      // Set the zone
+      document.getElementById("view-unit-zone").textContent = unitData.zona;
+      
+      // Set the week schedule
+      document.getElementById("view-unit-week-schedule").textContent = 
+        `${unitData.horarioInicioSemana} - ${unitData.horarioFinSemana}`;
+      
+      // Set the weekend schedule
+      document.getElementById("view-unit-weekend-schedule").textContent = 
+        `${unitData.horarioInicioFinde} - ${unitData.horarioFinFinde}`;
+      
+      // Show the modal
+      toggleModal('viewUnitModal');
     }
   </script>
 </body>
