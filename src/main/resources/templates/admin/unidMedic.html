@@ -108,7 +108,7 @@
         </button>
       </div>
 
-      <div id="unitTable" class="mt-6"></div>
+      <div id="unitTable" class="mt-6 h-5/6 shadow-lg"></div>
 
       <div id="loadingMessage"
         class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white hidden">
@@ -265,7 +265,7 @@
         unitTable = new Tabulator("#unitTable", {
           data: units,
           layout: "fitColumns",
-          responsiveLayout: "hide",
+          scrollHorizontal: true,
           initialSort: [
             { column: "id", dir: "desc" } // Cambiar "nombre" por el campo que deseas ordenar
           ],
