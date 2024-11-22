@@ -21,7 +21,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeRequests()
-            .antMatchers("/","/update","/index", "/map/index", "/register", "/map/unidades", "/map/informacion", "/css/**", "/js/**", "/images/**", "/webjars/**")
+            .antMatchers("/","/update","/index", "/map/index", "/register", "/map/unidades", "/map/informacion","/dialogflow/webhook", "/css/**", "/js/**", "/images/**", "/webjars/**")
                 .permitAll()  // Permite acceso a estas rutas sin autenticación
                 .anyRequest().authenticated()  // Requiere autenticación para el resto
             .and()

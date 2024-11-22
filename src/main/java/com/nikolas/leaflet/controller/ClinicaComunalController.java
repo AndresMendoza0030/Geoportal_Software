@@ -1,31 +1,29 @@
 package com.nikolas.leaflet.controller;
 
-import java.util.ArrayList;
-import java.util.List;
 import com.nikolas.leaflet.domain.ClinicaComunal;
-import com.nikolas.leaflet.service.ClinicaComunalService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import com.nikolas.leaflet.dto.BusquedaDTO;
+import com.nikolas.leaflet.service.ClinicaComunalService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/clinicaComunal")
 public class ClinicaComunalController {
 
-    @Autowired
-    private ClinicaComunalService ClinicaComunalService;
+    private final ClinicaComunalService clinicaComunalService;
+
+    // Constructor injection para reemplazar @Autowired
+    public ClinicaComunalController(ClinicaComunalService clinicaComunalService) {
+        this.clinicaComunalService = clinicaComunalService;
+    }
 
     @PostMapping("/buscar")
     public ResponseEntity<List<ClinicaComunal>> getClinicasByMunicipio(@RequestBody BusquedaDTO busqueda) {
-        List<ClinicaComunal> clinicas = ClinicaComunalService.buscarPorMunicipio(busqueda.getMunicipio());
+        List<ClinicaComunal> clinicas = clinicaComunalService.buscarPorMunicipio(busqueda.getMunicipio());
         if (clinicas.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -34,7 +32,7 @@ public class ClinicaComunalController {
 
     @PostMapping("/municipios")
     public ResponseEntity<List<String>> getDistinctMunicipios() {
-        List<String> municipios = ClinicaComunalService.getDistinctMunicipios();
+        List<String> municipios = clinicaComunalService.getDistinctMunicipios();
         if (municipios.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -42,11 +40,10 @@ public class ClinicaComunalController {
     }
 
     @PostMapping("/buscarm")
-    public ResponseEntity<List<ClinicaComunal>> getClinicasByMunicipios(@RequestBody List<String> municipio) {
-        List<ClinicaComunal> clinicas = new ArrayList<>();
-        for (String municipios : municipio) {
-            clinicas.addAll(ClinicaComunalService.buscarPorMunicipio(municipios));
-        }
+    public ResponseEntity<List<ClinicaComunal>> getClinicasByMunicipios(@RequestBody List<String> municipios) {
+        List<ClinicaComunal> clinicas = municipios.stream()
+                .flatMap(municipio -> clinicaComunalService.buscarPorMunicipio(municipio).stream())
+                .collect(Collectors.toList());
         if (clinicas.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -55,7 +52,7 @@ public class ClinicaComunalController {
 
     @GetMapping("/all")
     public ResponseEntity<List<ClinicaComunal>> getAllClinicas() {
-        List<ClinicaComunal> clinicas = ClinicaComunalService.clinicaComunalGetAll();
+        List<ClinicaComunal> clinicas = clinicaComunalService.clinicaComunalGetAll();
         if (clinicas.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -64,20 +61,19 @@ public class ClinicaComunalController {
 
     @PostMapping("/add")
     public ResponseEntity<ClinicaComunal> addClinicaComunal(@RequestBody ClinicaComunal clinicaComunal) {
-        ClinicaComunal clinica = ClinicaComunalService.addClinicaComunal(clinicaComunal);
-        return ResponseEntity.ok(clinica);
+        ClinicaComunal nuevaClinica = clinicaComunalService.addClinicaComunal(clinicaComunal);
+        return ResponseEntity.ok(nuevaClinica);
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteClinicaComunal(@PathVariable Integer id) {
-        ClinicaComunalService.deleteClinicaComunal(id);
+        clinicaComunalService.deleteClinicaComunal(id);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<ClinicaComunal> updateClinicaComunal(@PathVariable Integer id, @RequestBody ClinicaComunal clinicaComunal) {
-        ClinicaComunal clinica = ClinicaComunalService.updateClinicaComunal(id, clinicaComunal);
-        return ResponseEntity.ok(clinica);
+        ClinicaComunal updatedClinica = clinicaComunalService.updateClinicaComunal(id, clinicaComunal);
+        return ResponseEntity.ok(updatedClinica);
     }
-
 }
